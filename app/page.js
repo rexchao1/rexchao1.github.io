@@ -18,7 +18,7 @@ const earlier = [
     href: null,
   },
   {
-    year: "2024",
+    year: "2022",
     name: "Chess",
     desc: "Two-player chess written in Python Turtle",
     href: "https://github.com/rexchao1/Chess",
@@ -314,8 +314,7 @@ export default function Home() {
         <div className="shell">
           <h2>Say hi.</h2>
           <p className="pitch">
-            Always up to talk about agents, automation, or why the curveball
-            is unhittable.
+            
           </p>
           <a className="email" href="mailto:rexchao1@gmail.com">
             rexchao1@gmail.com
