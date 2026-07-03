@@ -185,7 +185,7 @@ export default function Home() {
           </div>
           <div className="hermes-grid">
             <div className="hermes-intro">
-              <h2>Hermes runs my family's life.</h2>
+              <h2>Hermes, the family manager.</h2>
               <p>
                 A solo-built autonomous agent framework that manages our
                 calendar, events, and daily tasks. It started as a way to stop
