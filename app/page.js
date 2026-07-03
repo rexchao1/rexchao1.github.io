@@ -84,10 +84,10 @@ export default function Home() {
       <main id="top">
         <section className="shell hero">
           <p className="hero-eyebrow label r1">
-            Rex Chao — UCLA '29 · Los Angeles
+            CS — UCLA '29 · Los Angeles
           </p>
           <h1 className="r2">
-            I build AI agents that do <span className="accent">real work</span>
+            Rex Chao
             .
           </h1>
           <div className="hero-cta r3">
