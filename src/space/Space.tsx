@@ -70,11 +70,19 @@ function hoverHandlers(id: string, setHovered: (id: string | null) => void, acti
 /** Marks where a world's name sits. `hideBehind` hides it while the world passes behind Tooey. */
 function Label({ id, y, hideBehind }: { id: string; y: number; hideBehind?: boolean }) {
   const anchor = useRef<THREE.Group>(null);
-  const w = useMemo(() => new THREE.Vector3(), []);
-  useFrame(() => {
+  const v = useMemo(() => ({ w: new THREE.Vector3(), d: new THREE.Vector3(), c: new THREE.Vector3() }), []);
+  useFrame(({ camera }) => {
     if (!hideBehind || !anchor.current) return;
-    anchor.current.getWorldPosition(w).sub(SPACE_CENTER);
-    if (w.z < -0.5 && Math.abs(w.x) < 2.6) hiddenAnchors.add('lbl-' + id);
+    // hidden when the line from the camera to this world passes through Tooey (radius 2) before reaching it
+    anchor.current.getWorldPosition(v.w);
+    v.d.copy(v.w).sub(camera.position);
+    const len = v.d.length();
+    v.d.divideScalar(len);
+    v.c.copy(SPACE_CENTER).sub(camera.position);
+    const along = v.c.dot(v.d);
+    const miss = v.c.lengthSq() - along * along;
+    const blocked = along > 0 && along < len - 0.3 && miss < 2.0 * 2.0;
+    if (blocked) hiddenAnchors.add('lbl-' + id);
     else hiddenAnchors.delete('lbl-' + id);
   });
   return (
@@ -256,7 +264,7 @@ function Station({ id, logo, name, hovered, setHovered, active }: { id: string; 
   );
 }
 
-export function Space({ hovered, setHovered, active }: HoverProps) {
+export function Space({ hovered, setHovered, active, portrait }: HoverProps & { portrait: boolean }) {
   const orbit = useRef<THREE.Group[]>([]);
   const angle = useRef([0, 0]);
   useFrame((_, dt) => {
@@ -291,10 +299,10 @@ export function Space({ hovered, setHovered, active }: HoverProps) {
           </group>
         </group>
       ))}
-      <group position={[-7.4, 3.4, -2]} rotation={[0, 0.35, 0]}>
+      <group position={portrait ? [0, 1.5, -7.9] : [-7.4, 3.4, -2]} rotation={portrait ? [-0.9, 0, 0] : [0, 0.35, 0]}>
         <Station id="photon" logo={photonLogo} name="Photon Commerce" hovered={hovered} setHovered={setHovered} active={active} />
       </group>
-      <group position={[7.4, 3.2, -2]} rotation={[0, -0.35, 0]}>
+      <group position={portrait ? [0, 1.5, 8.4] : [7.4, 3.2, -2]} rotation={portrait ? [-0.9, 0, 0] : [0, -0.35, 0]}>
         <Station id="studioapp" logo={studioLogo} name="StudioApp.ai" hovered={hovered} setHovered={setHovered} active={active} />
       </group>
       <pointLight position={[0, 0, 0]} intensity={30} distance={14} color="#ffb47a" />

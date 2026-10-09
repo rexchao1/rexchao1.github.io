@@ -66,7 +66,10 @@ function Hot({ p, hovered, setHovered }: { p: Placed; hovered: string | null; se
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 /** Moves `pos` toward the scene, then places the camera and sets the sky mood from it. */
-function Rig({ scene, pos, mood, show }: { scene: number; pos: React.RefObject<number>; mood: React.RefObject<Mood>; show: React.RefObject<number> }) {
+/** Turn of the home view around the island (phones: drifts on its own and follows a sideways drag). */
+export const spin = { az: 0, held: false };
+
+function Rig({ scene, pos, mood, show, idle }: { scene: number; pos: React.RefObject<number>; mood: React.RefObject<Mood>; show: React.RefObject<number>; idle: boolean }) {
   const { camera, size, pointer } = useThree();
   const v = useMemo(
     () => ({ a: new THREE.Vector3(), b: new THREE.Vector3(), la: new THREE.Vector3(), lb: new THREE.Vector3(), p: new THREE.Vector3(), l: new THREE.Vector3(), cur: new THREE.Vector3(0, 6, 12), look: new THREE.Vector3(0, 1, 0) }),
@@ -75,20 +78,43 @@ function Rig({ scene, pos, mood, show }: { scene: number; pos: React.RefObject<n
   useFrame((_, dt) => {
     const cam = camera as THREE.PerspectiveCamera;
     const aspect = size.width / size.height;
+    const portrait = aspect < 0.8;
+    // phones get a wider lens
+    const fov = portrait ? 50 : 36;
+    if (Math.abs(cam.fov - fov) > 0.01) {
+      cam.fov = fov;
+      cam.updateProjectionMatrix();
+    }
     const tanH = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
+    if (portrait && idle && !spin.held && scene === 0) spin.az += dt * 0.12;
     // move pos toward the scene at a steady pace, eased per leg
     const d = scene - pos.current;
     pos.current += Math.sign(d) * Math.min(Math.abs(d), dt * 0.85);
     const P = pos.current;
 
-    const homeD = Math.max(8.2, 5.0 / (tanH * aspect) + 1);
-    const spaceD = Math.max(17, 8.8 / (tanH * aspect) + 1.5);
-    const connD = Math.max(7.6, 3.4 / (tanH * aspect));
-    const poses = [
-      { p: [0, 3.0 + homeD * 0.12, homeD], l: [0, 0.9, 0] },
-      { p: [SPACE_CENTER.x, SPACE_CENTER.y + 2.2, SPACE_CENTER.z + spaceD], l: [SPACE_CENTER.x, SPACE_CENTER.y + 0.5, SPACE_CENTER.z] },
-      { p: [aspect < 0.8 ? -0.9 : 0.2, 2.0, connD], l: [aspect < 0.8 ? -0.9 : 0.1, 1.9, 0] },
-    ];
+    const C = SPACE_CENTER;
+    let poses: Array<{ p: number[]; l: number[] }>;
+    if (!portrait) {
+      const homeD = Math.max(8.2, 5.0 / (tanH * aspect) + 1);
+      const spaceD = Math.max(17, 8.8 / (tanH * aspect) + 1.5);
+      const connD = Math.max(7.6, 3.4 / (tanH * aspect));
+      poses = [
+        { p: [0, 3.0 + homeD * 0.12, homeD], l: [0, 0.9, 0] },
+        { p: [C.x, C.y + 2.2, C.z + spaceD], l: [C.x, C.y + 0.5, C.z] },
+        { p: [0.2, 2.0, connD], l: [0.1, 1.9, 0] },
+      ];
+    } else {
+      // Phones: frame less width, look down more, and let the view circle the island instead.
+      const homeD = 3.3 / (tanH * aspect);
+      const az = spin.az;
+      const spaceD = 6.6 / (tanH * aspect);
+      const connD = 2.6 / (tanH * aspect);
+      poses = [
+        { p: [Math.sin(az) * homeD * 0.88, homeD * 0.5, Math.cos(az) * homeD * 0.88], l: [0, 0.2, 0] },
+        { p: [C.x, C.y + spaceD * 0.8, C.z + spaceD * 0.6], l: [C.x, C.y, C.z + 0.6] },
+        { p: [-0.7, 3.6, connD], l: [-0.7, 0.3, 0] },
+      ];
+    }
     const i = Math.min(1, Math.floor(P));
     const t = ease(P - i);
     const A = poses[i], B = poses[i + 1];
@@ -195,6 +221,12 @@ export function Site() {
   const pos = useRef(0);
   const show = useRef(0);
   const sceneRef = useRef(0);
+  const [portrait, setPortrait] = useState(() => innerWidth / innerHeight < 0.8);
+  useEffect(() => {
+    const on = () => setPortrait(innerWidth / innerHeight < 0.8);
+    addEventListener('resize', on);
+    return () => removeEventListener('resize', on);
+  }, []);
   sceneRef.current = scene;
 
   // Only the current scene's things react to the pointer.
@@ -228,6 +260,8 @@ export function Site() {
     let lock = 0;
     let acc = 0;
     let touchY: number | null = null;
+    let touchX = 0;
+    let sideways = false;
     const step = (dir: number) => {
       const now = performance.now();
       if (now < lock) return;
@@ -247,21 +281,38 @@ export function Site() {
       else return;
       e.preventDefault();
     };
-    const onTouchStart = (e: TouchEvent) => (touchY = e.touches[0].clientY);
+    const onTouchStart = (e: TouchEvent) => {
+      touchY = e.touches[0].clientY;
+      touchX = e.touches[0].clientX;
+      sideways = false;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchY === null || sceneRef.current !== 0) return;
+      const dx = e.touches[0].clientX - touchX;
+      if (!sideways && Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(e.touches[0].clientY - touchY)) sideways = true;
+      if (sideways) {
+        spin.held = true;
+        spin.az -= dx * 0.008;
+        touchX = e.touches[0].clientX;
+      }
+    };
     const onTouchEnd = (e: TouchEvent) => {
+      spin.held = false;
       if (touchY === null) return;
       const dy = touchY - e.changedTouches[0].clientY;
-      if (Math.abs(dy) > 50) step(Math.sign(dy));
+      if (!sideways && Math.abs(dy) > 50) step(Math.sign(dy));
       touchY = null;
     };
     window.addEventListener('wheel', onWheel, { passive: true });
     window.addEventListener('keydown', onKey);
     window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
     return () => {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -292,7 +343,7 @@ export function Site() {
           <Environment mood={mood} />
           <Selection>
             <Home hovered={hovered} setHovered={setHovered} waveKey={waveKey} onMe={() => setWaveKey((k) => k + 1)} />
-            <Space hovered={hovered} setHovered={setHovered} active={scene === 1} />
+            <Space hovered={hovered} setHovered={setHovered} active={scene === 1} portrait={portrait} />
             <Connect show={show} />
             <EffectComposer multisampling={0} autoClear={false}>
               <Outline blur edgeStrength={4} visibleEdgeColor={0xfff3d6} hiddenEdgeColor={0x000000} width={1200} />
@@ -302,7 +353,7 @@ export function Site() {
               <Vignette offset={0.3} darkness={0.5} />
             </EffectComposer>
           </Selection>
-          <Rig scene={scene} pos={pos} mood={mood} show={show} />
+          <Rig scene={scene} pos={pos} mood={mood} show={show} idle={hovered === null} />
           <Pinner />
         </Canvas>
       </div>
@@ -312,14 +363,14 @@ export function Site() {
         <h1>Rex Chao</h1>
         <p>CS at UCLA</p>
       </header>
-      <p className="hint s0">Hover anything</p>
+      <p className="hint s0">{portrait ? 'Tap anything' : 'Hover anything'}</p>
       <div className="title s1">
         <h2>Things I've built</h2>
-        <p>Hover a world</p>
+        <p>{portrait ? 'Tap a world' : 'Hover a world'}</p>
       </div>
       <div className="title s2">
         <h2>Say hi</h2>
-        <p>Grab a balloon</p>
+        <p>{portrait ? 'Pick one' : 'Grab a balloon'}</p>
       </div>
       <nav className="dots" aria-label="Sections">
         {SCENES.map((n, i) => (

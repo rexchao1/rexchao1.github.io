@@ -18,7 +18,7 @@ html,body{margin:0;height:100%;background:#2a1f5c;color:var(--light);font-family
 .shot span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.9)}
 .chips{list-style:none;margin:10px 0 0;padding:0 2px;display:flex;flex-wrap:wrap;gap:6px}
 .chips li{font-size:13px;font-weight:600;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--tint) 14%,#fff);color:color-mix(in srgb,var(--tint) 70%,#000)}
-@media (max-width:600px){.hint{display:none}.card{width:auto;right:16px}}
+@media (max-width:600px){.card{width:auto;right:16px}.card.right{left:16px}.card .shotimg img{max-height:150px}}
 /* scene-specific overlays fade with html[data-scene] */
 .s0,.s1,.s2{transition:opacity .5s ease-out .2s;opacity:0;pointer-events:none}
 html[data-scene="0"] .s0,html[data-scene="1"] .s1,html[data-scene="2"] .s2{opacity:1}
@@ -65,3 +65,19 @@ html[data-scene="2"] .s2.title{left:auto;right:clamp(56px,8vw,120px);text-align:
 .txt{display:flex;flex-direction:column}
 .name{transition:opacity .4s}
 html[data-scene="2"] .name{opacity:0}
+@media (max-aspect-ratio:4/5){
+  .hint{display:block;right:auto;left:clamp(16px,4vw,48px);top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 74px)}
+  .label{font-size:12px}.label small{font-size:10px}.label.big{font-size:18px}.label.big small{font-size:11px}
+  .balloons{inset:auto 16px calc(env(safe-area-inset-bottom,0px) + 76px) 16px;display:flex;flex-direction:column;align-items:stretch;gap:10px;overflow:visible}
+  .balloon{position:static;transform:none!important;visibility:visible!important}
+  .balloon a,.balloon .mailrow,.balloon .soon{display:flex;min-height:48px;padding-inline:16px}
+  .balloon .addr{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  html[data-scene="2"] .s2.title{left:0;right:0;text-align:center;top:calc(env(safe-area-inset-top,0px) + 28px);bottom:auto}
+  .s2 h2{font-size:56px}
+  .s1.title p{display:none}
+  .s1.title h2{font-size:26px}
+  .s1.title{top:calc(env(safe-area-inset-top,0px) + 118px)}
+  .dots{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:none;flex-direction:row;right:16px}
+  .dots button span{display:none}
+  .next{left:16px;transform:none}
+}

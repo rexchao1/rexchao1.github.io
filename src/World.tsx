@@ -94,6 +94,7 @@ function Sky({ mood }: { mood: React.RefObject<Mood> }) {
 function Horizon({ mood }: { mood: React.RefObject<Mood> }) {
   const hillMat = useRef<THREE.MeshBasicMaterial>(null);
   const seaMat = useRef<THREE.MeshStandardMaterial>(null);
+  const hillMesh = useRef<THREE.Mesh>(null);
   const palms = useMemo(() => {
     const out: Array<{ a: number; r: number; h: number; lean: number }> = [];
     let seed = 7;
@@ -118,15 +119,17 @@ function Horizon({ mood }: { mood: React.RefObject<Mood> }) {
     const { night, day } = mood.current;
     const c = new THREE.Color('#3b2346').lerp(new THREE.Color('#05060f'), night).lerp(new THREE.Color('#8fb3d6'), day);
     hillMat.current?.color.copy(c);
+    // seen from high above at night the hills read as a dark band; let them go
+    if (hillMesh.current) hillMesh.current.visible = night < 0.6;
     seaMat.current?.color.copy(new THREE.Color('#6a3d6e').lerp(new THREE.Color('#05060f'), night).lerp(new THREE.Color('#4f9be0'), day));
   });
   return (
     <group position={[0, -6, 0]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[200, 64]} />
-        <meshStandardMaterial ref={seaMat} roughness={0.15} metalness={0.4} />
+        <meshStandardMaterial ref={seaMat} roughness={0.75} metalness={0.1} />
       </mesh>
-      <mesh geometry={hills}>
+      <mesh geometry={hills} ref={hillMesh}>
         <meshBasicMaterial ref={hillMat} side={THREE.DoubleSide} fog={false} />
       </mesh>
       {palms.map((p, i) => (
