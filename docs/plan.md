@@ -52,3 +52,36 @@ copy approved by Rex, working on phones, and the Animus opening loading fast.
 - Wren stays the stand-in for now (Rex: "keep wren for now").
 - Open: Minnie letter screens show "Renu Prosthodontics", probably the real client. Not used on the site until Rex decides.
 - Open: two Animus app shots have a relabeled provider bar and made-up token counts. Crop or recapture before use.
+
+## Pivot v3 (2026-10-09): three scenes, short scroll like igloo.inc
+Rex: shorter scroll; first page is everything about him, in a personalized, vibrant Animus world where
+hovering things opens popups (images + text) in a corner; second, a secluded space-themed projects place where
+Tooey is emphasized and every other project plus both internships are visible without more scrolling; last, a
+connect page that is happier and different from the projects page. No practice name anywhere (Renu letter screens
+stay out).
+
+### Scenes
+1. Home (About): Animus "dusk" stage with the real Wren. Rex's things placed on the stage, each hoverable:
+   UCLA pennant (CS at UCLA, from Danville), baseball corner (volunteer umpire), skis (Tahoe), pickleball paddle,
+   KBBQ grill (LA eats), globe (travel), record player (top artists), pet corner (Rusty, Petey, Jasper), photo
+   easel (friends). Hover highlights the object and opens a corner card with photos and two lines.
+2. Projects (space): scroll tilts up into the sky into night space. Tooey is a big central planet; front desk,
+   Fetch, Bruin Desk, PoseAR, CatCart, Laoshu orbit as smaller worlds; Photon Commerce and StudioApp.ai are two
+   stations. All in one view. Hover opens a card with a screenshot and a line.
+3. Connect: dive back down into Animus's daylight theme. Wren waves; balloons carry LinkedIn, GitHub, email and
+   resume. "Say hi".
+
+### Build approach
+- Vite + React + React Three Fiber app at the repo root, importing Animus's scene modules (sky, lights, platform,
+  props, Wren) from the local Animus checkout through an alias. Nothing from Animus is copied into this repo yet.
+- Preview: build to one self-contained HTML (inlined JS) and publish to the artifact.
+- OPEN, ask Rex before deploy: the site repo is public, and deploying needs Animus's scene code in a build that
+  GitHub can run (vendor the scene modules into this repo, commit a prebuilt bundle, or make the repo private).
+
+### v3 steps
+1. Scaffold the app and render the Animus stage with Wren in a browser. TODO
+2. Home scene: personal props, hover highlight, corner cards. TODO
+3. Projects scene in space with hover cards. TODO
+4. Connect scene in daylight. TODO
+5. Scroll transitions between the three, with snapping. TODO
+6. Single-file build, strict-policy test, publish. TODO
