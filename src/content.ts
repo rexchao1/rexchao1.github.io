@@ -48,3 +48,5 @@ export const PROJECTS: Record<string, Spot> = {
   photon: { id: 'photon', tag: 'Internship', title: 'Photon Commerce', line: 'Team player? Ask them.', shots: 0, tint: '#1F4E6E' },
   studioapp: { id: 'studioapp', tag: 'Internship, now', title: 'StudioApp.ai', line: 'Team player? Ask them too.', shots: 0, tint: '#1F4E6E' },
 };
+
+export const EMAIL = 'rexchao1@gmail.com';

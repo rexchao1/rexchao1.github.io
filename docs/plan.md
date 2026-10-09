@@ -97,3 +97,22 @@ contact links and cards stay large; do not shrink them for polish.
 - Rex's hair and skin colors for the character (`LOOK` in src/home/Avatar.tsx are placeholders).
 - What Rex did at Photon Commerce and StudioApp.ai, if he wants more than "Team player? Ask them."
 - PoseAR art; the chairlift on the mountain faces away from the camera.
+
+## Pivot v4 (2026-10-09): readable text page, one 3D moment
+Rex: "too much with these animations. I want more easy to read text", like neilchandran.com, with scroll effects
+"toned way down"; then "a scrolling animation where it goes into my name like 3d still", "more like a zoom out and
+my name ends up smaller and fixed on the screen".
+- The three-scene world is retired. It is kept at git tag `world-v3` (Site.tsx, World.tsx, home/, space/, connect/).
+- Opening: "Rex Chao" in 3D fills the screen. Scrolling (about one screen, scrubbed, reversible) zooms out and the
+  name shrinks into the top-left of a slim header, where it stays, still 3D, with a slight tilt toward the pointer.
+- Below: a plain one-column text page. Intro, Tooey, Builds, About, Contact. The header nav scrolls to each section
+  and highlights the current one. Normal scrolling, no snapping. Motion: sections ease in once. Reduced motion skips
+  the zoom.
+- Name look is open: solid letters or particles that assemble. Both live in one prototype with a switch.
+
+### v4 steps
+1. Prototype the name zoom (solid and particles) with a rough text page, publish for Rex. DONE (https://claude.ai/artifact/EN99o68RXcSfvtP3YK4xue, `src/Page.tsx`, `src/intro/Name.tsx`; name font made from Bricolage Grotesque 800 with opentype.js, only the letters in "Rex Chao")
+2. Rex picks a look; remove the other one and the retired world code. WAITING ON REX
+3. Copy pass on the text page with Rex; real photos if About gets any. TODO
+4. Phone and performance pass. TODO
+5. Merge to main and go live. TODO (ask Rex first)

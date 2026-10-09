@@ -1,10 +1,10 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Site } from './Site';
-import './site.css';
+import { Page } from './Page';
+import './page.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Site />
+    <Page />
   </StrictMode>,
 );
