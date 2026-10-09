@@ -61,26 +61,28 @@ connect page that is happier and different from the projects page. No practice n
 stay out).
 
 ### Scenes
-1. Home (About): Animus "dusk" stage with the real Wren. Rex's things placed on the stage, each hoverable:
+1. Home (About): Rex's own island at LA golden hour with a Rex character (was: Animus stage with Wren). Rex's things placed on the stage, each hoverable:
    UCLA pennant (CS at UCLA, from Danville), baseball corner (volunteer umpire), skis (Tahoe), pickleball paddle,
    KBBQ grill (LA eats), globe (travel), record player (top artists), pet corner (Rusty, Petey, Jasper), photo
    easel (friends). Hover highlights the object and opens a corner card with photos and two lines.
 2. Projects (space): scroll tilts up into the sky into night space. Tooey is a big central planet; front desk,
-   Fetch, Bruin Desk, PoseAR, CatCart, Laoshu orbit as smaller worlds; Photon Commerce and StudioApp.ai are two
+   Fetch, Bruin Desk, PoseAR, CatCart, Laoshu, Animus orbit as smaller worlds; Photon Commerce and StudioApp.ai are two
    stations. All in one view. Hover opens a card with a screenshot and a line.
-3. Connect: dive back down into Animus's daylight theme. Wren waves; balloons carry LinkedIn, GitHub, email and
+3. Connect: back down to the island in bright daylight. Rex waves; balloons carry LinkedIn, GitHub, email and
    resume. "Say hi".
 
-### Build approach
-- Vite + React + React Three Fiber app at the repo root, importing Animus's scene modules (sky, lights, platform,
-  props, Wren) from the local Animus checkout through an alias. Nothing from Animus is copied into this repo yet.
+### Build approach (changed 2026-10-09)
+Rex: "Don't use animus. Maybe just make your own 3d model. i want it customized for me. add animus to the builds".
+- No Animus code. Own world in `src/`: LA golden-hour sky with palms (`World.tsx`), a floating island, a stylized Rex
+  character in a UCLA hoodie (`home/Avatar.tsx`, hair and skin colors are placeholders until Rex confirms), and his
+  things built from primitives (`home/props.tsx`). Vite + React + React Three Fiber with its own node_modules.
+- Animus becomes a build in the projects scene (shots in ../shots/animus; crop the relabeled provider bar).
+- The deploy question is gone: everything is in this repo.
 - Preview: build to one self-contained HTML (inlined JS) and publish to the artifact.
-- OPEN, ask Rex before deploy: the site repo is public, and deploying needs Animus's scene code in a build that
-  GitHub can run (vendor the scene modules into this repo, commit a prebuilt bundle, or make the repo private).
 
 ### v3 steps
-1. Scaffold the app and render the Animus stage with Wren in a browser. TODO
-2. Home scene: personal props, hover highlight, corner cards. TODO
+1. Scaffold the app. DONE (first on Animus, then replaced by an own world)
+2. Home scene: personal props, hover highlight, corner cards. DONE (photos are placeholders)
 3. Projects scene in space with hover cards. TODO
 4. Connect scene in daylight. TODO
 5. Scroll transitions between the three, with snapping. TODO
