@@ -74,7 +74,7 @@ function Label({ id, y, hideBehind }: { id: string; y: number; hideBehind?: bool
   useFrame(({ camera }) => {
     if (!hideBehind || !anchor.current) return;
     // hidden when the line from the camera to this world passes through Tooey (radius 2) before reaching it
-    anchor.current.getWorldPosition(v.w);
+    (anchor.current.parent ?? anchor.current).getWorldPosition(v.w); // the world itself, not its label
     v.d.copy(v.w).sub(camera.position);
     const len = v.d.length();
     v.d.divideScalar(len);

@@ -8,9 +8,9 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Bloom, EffectComposer, Outline, Selection, Select, SMAA, ToneMapping, Vignette } from '@react-three/postprocessing';
 import { ToneMappingMode } from 'postprocessing';
 import * as THREE from 'three';
-import { Environment, Island, type Mood } from './World';
+import { Environment, Mountain, type Mood } from './World';
 import { Avatar } from './home/Avatar';
-import { Baseball, Corkboard, Globe, Grill, Pennant, PetCorner, Pickleball, RecordPlayer, Skis } from './home/props';
+import { Baseball, Corkboard, Globe, Grill, Pennant, PetCorner, Pickleball, RecordPlayer } from './home/props';
 import { PROJECTS, SPOTS, type Spot } from './content';
 import { SPACE_CENTER, Space, SpaceLabels } from './space/Space';
 import { BalloonLinks, Connect } from './connect/Connect';
@@ -18,16 +18,19 @@ import { Pinner } from './anchors';
 
 type Placed = { id: string; at: [number, number, number]; rot: number; look: number; el: ReactNode };
 
+/** Rex stands by home plate; his things are spread over the ballpark, the ski mountain out past the fence. */
+export const REX: [number, number, number] = [1.0, 0, 2.7];
+
 const PLACED: Placed[] = [
-  { id: 'ucla', at: [-3.5, 0, -2.5], rot: 0.35, look: 2.2, el: <Pennant /> },
-  { id: 'friends', at: [-1.15, 0, -3.3], rot: 0.12, look: 1.3, el: <Corkboard /> },
-  { id: 'globe', at: [1.25, 0, -3.0], rot: -0.1, look: 1.1, el: <Globe /> },
-  { id: 'records', at: [3.4, 0, -2.1], rot: -0.6, look: 0.8, el: <RecordPlayer /> },
-  { id: 'skis', at: [-3.7, 0, -0.2], rot: 0.7, look: 1.0, el: <Skis /> },
-  { id: 'grill', at: [3.5, 0, 0.4], rot: -0.7, look: 0.9, el: <Grill /> },
-  { id: 'baseball', at: [-2.5, 0, 1.9], rot: 0.5, look: 0.2, el: <Baseball /> },
-  { id: 'pickleball', at: [-0.4, 0, 2.6], rot: 0, look: 0.1, el: <Pickleball /> },
-  { id: 'pets', at: [2.4, 0, 2.3], rot: -0.55, look: 0.4, el: <PetCorner /> },
+  { id: 'baseball', at: [0, 0, 2.2], rot: 0, look: 0.2, el: <Baseball /> },
+  { id: 'ucla', at: [-7.2, 0, 0.6], rot: 0.5, look: 2.2, el: <Pennant /> },
+  { id: 'friends', at: [-5.4, 0, -6.2], rot: 0.35, look: 1.3, el: <Corkboard /> },
+  { id: 'globe', at: [5.0, 0, -6.4], rot: -0.3, look: 1.1, el: <Globe /> },
+  { id: 'records', at: [7.4, 0, -0.6], rot: -0.9, look: 0.8, el: <RecordPlayer /> },
+  { id: 'grill', at: [5.0, 0, 3.8], rot: -0.6, look: 0.9, el: <Grill /> },
+  { id: 'pickleball', at: [2.6, 0, 5.6], rot: 0, look: 0.1, el: <Pickleball /> },
+  { id: 'pets', at: [-4.8, 0, 4.4], rot: 0.5, look: 0.4, el: <PetCorner /> },
+  { id: 'skis', at: [26, 0, -80], rot: -0.4, look: 14, el: <Mountain /> },
 ];
 
 function Hot({ p, hovered, setHovered }: { p: Placed; hovered: string | null; setHovered: (id: string | null) => void }) {
@@ -95,24 +98,24 @@ function Rig({ scene, pos, mood, show, idle }: { scene: number; pos: React.RefOb
     const C = SPACE_CENTER;
     let poses: Array<{ p: number[]; l: number[] }>;
     if (!portrait) {
-      const homeD = Math.max(8.2, 5.0 / (tanH * aspect) + 1);
+      const homeD = Math.max(15.5, 8.4 / (tanH * aspect));
       const spaceD = Math.max(17, 8.8 / (tanH * aspect) + 1.5);
       const connD = Math.max(7.6, 3.4 / (tanH * aspect));
       poses = [
-        { p: [0, 3.0 + homeD * 0.12, homeD], l: [0, 0.9, 0] },
+        { p: [0, 2.0 + homeD * 0.16, homeD], l: [0, 1.6, -4] },
         { p: [C.x, C.y + 2.2, C.z + spaceD], l: [C.x, C.y + 0.5, C.z] },
-        { p: [0.2, 2.0, connD], l: [0.1, 1.9, 0] },
+        { p: [REX[0] - 0.2, 2.3, REX[2] + connD], l: [REX[0] - 0.3, 2.35, REX[2]] },
       ];
     } else {
       // Phones: frame less width, look down more, and let the view circle the island instead.
-      const homeD = 3.3 / (tanH * aspect);
-      const az = spin.az;
+      const homeD = 3.6 / (tanH * aspect);
+      const az = Math.sin(spin.az) * 0.55; // sway side to side over the field
       const spaceD = 6.6 / (tanH * aspect);
       const connD = 2.6 / (tanH * aspect);
       poses = [
-        { p: [Math.sin(az) * homeD * 0.88, homeD * 0.5, Math.cos(az) * homeD * 0.88], l: [0, 0.2, 0] },
+        { p: [Math.sin(az) * homeD * 0.8, homeD * 0.26, 2 + Math.cos(az) * homeD * 0.8], l: [Math.sin(az) * 1.2, 1.6, -5] },
         { p: [C.x, C.y + spaceD * 0.8, C.z + spaceD * 0.6], l: [C.x, C.y, C.z + 0.6] },
-        { p: [-0.7, 3.6, connD], l: [-0.7, 0.3, 0] },
+        { p: [REX[0] - 0.7, 3.6, REX[2] + connD], l: [REX[0] - 0.7, 0.3, REX[2]] },
       ];
     }
     const i = Math.min(1, Math.floor(P));
@@ -131,7 +134,7 @@ function Rig({ scene, pos, mood, show, idle }: { scene: number; pos: React.RefOb
     cam.lookAt(v.look);
 
     mood.current.night = THREE.MathUtils.clamp(1 - Math.abs(P - 1) * 1.15, 0, 1);
-    mood.current.day = THREE.MathUtils.clamp((P - 1.15) / 0.85, 0, 1);
+    mood.current.golden = THREE.MathUtils.clamp((P - 1.15) / 0.85, 0, 1);
     show.current = THREE.MathUtils.clamp((P - 1.5) * 2, 0, 1);
   });
   return null;
@@ -144,12 +147,11 @@ function Home({ hovered, setHovered, waveKey, onMe }: { hovered: string | null; 
   }, [hovered]);
   return (
     <group>
-      <Island />
       {PLACED.map((p) => (
         <Hot key={p.id} p={p} hovered={hovered} setHovered={setHovered} />
       ))}
       <group
-        position={[0, 0, 0.2]}
+        position={REX}
         onPointerOver={(e) => {
           e.stopPropagation();
           setHovered('me');
@@ -217,7 +219,7 @@ export function Site() {
   const [scene, setScene] = useState(0);
   const [hovered, setHoveredRaw] = useState<string | null>(null);
   const [waveKey, setWaveKey] = useState(0);
-  const mood = useRef<Mood>({ night: 0, day: 0 });
+  const mood = useRef<Mood>({ night: 0, golden: 0 });
   const pos = useRef(0);
   const show = useRef(0);
   const sceneRef = useRef(0);
@@ -344,7 +346,9 @@ export function Site() {
           <Selection>
             <Home hovered={hovered} setHovered={setHovered} waveKey={waveKey} onMe={() => setWaveKey((k) => k + 1)} />
             <Space hovered={hovered} setHovered={setHovered} active={scene === 1} portrait={portrait} />
-            <Connect show={show} />
+            <group position={[REX[0], 0, REX[2] - 0.2]}>
+              <Connect show={show} />
+            </group>
             <EffectComposer multisampling={0} autoClear={false}>
               <Outline blur edgeStrength={4} visibleEdgeColor={0xfff3d6} hiddenEdgeColor={0x000000} width={1200} />
               <Bloom mipmapBlur intensity={0.7} luminanceThreshold={0.95} luminanceSmoothing={0.3} />

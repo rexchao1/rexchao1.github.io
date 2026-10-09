@@ -41,10 +41,10 @@ export const EMAIL = 'rexchao1@gmail.com';
 
 type Balloon = { id: string; color: string; at: [number, number, number]; label: string; href?: string; icon: keyof typeof ICON };
 const BALLOONS: Balloon[] = [
-  { id: 'linkedin', color: '#2f7fe0', at: [-1.55, 3.05, -0.3], label: 'LinkedIn', href: 'https://www.linkedin.com/in/rexchao1/', icon: 'linkedin' },
-  { id: 'github', color: '#35304a', at: [-0.75, 3.55, -0.6], label: 'GitHub', href: 'https://github.com/rexchao1', icon: 'github' },
-  { id: 'email', color: '#ff6b5a', at: [-2.25, 2.55, 0.0], label: EMAIL, icon: 'mail' },
-  { id: 'resume', color: '#ffc53d', at: [-1.2, 2.25, 0.45], label: 'Resume', icon: 'resume' },
+  { id: 'linkedin', color: '#2f7fe0', at: [-2.5, 3.45, -0.3], label: 'LinkedIn', href: 'https://www.linkedin.com/in/rexchao1/', icon: 'linkedin' },
+  { id: 'github', color: '#35304a', at: [-0.9, 4.1, -0.5], label: 'GitHub', href: 'https://github.com/rexchao1', icon: 'github' },
+  { id: 'email', color: '#ff6b5a', at: [-1.25, 2.75, 0.1], label: EMAIL, icon: 'mail' },
+  { id: 'resume', color: '#ffc53d', at: [-2.8, 2.05, 0.4], label: 'Resume', icon: 'resume' },
 ];
 /** Where the strings meet: Rex's left hand. */
 const HAND = new THREE.Vector3(-0.33, 0.5, 0.25);

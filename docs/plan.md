@@ -61,14 +61,14 @@ connect page that is happier and different from the projects page. No practice n
 stay out).
 
 ### Scenes
-1. Home (About): Rex's own island at LA golden hour with a Rex character (was: Animus stage with Wren). Rex's things placed on the stage, each hoverable:
+1. Home (About): a sunny ballpark that spreads out to hills and a snowy ski mountain with a chairlift (Rex: "grassy and sunshine like baseball and maybe a mountain for skiing", "don't make the first an island make it spread out"). Rex's character stands at home plate. Rex's things placed on the stage, each hoverable:
    UCLA pennant (CS at UCLA, from Danville), baseball corner (volunteer umpire), skis (Tahoe), pickleball paddle,
    KBBQ grill (LA eats), globe (travel), record player (top artists), pet corner (Rusty, Petey, Jasper), photo
    easel (friends). Hover highlights the object and opens a corner card with photos and two lines.
 2. Projects (space): scroll tilts up into the sky into night space. Tooey is a big central planet; front desk,
    Fetch, Bruin Desk, PoseAR, CatCart, Laoshu, Animus orbit as smaller worlds; Photon Commerce and StudioApp.ai are two
    stations. All in one view. Hover opens a card with a screenshot and a line.
-3. Connect: back down to the island in bright daylight. Rex waves; balloons carry LinkedIn, GitHub, email and
+3. Connect: back down to the ballpark at golden hour. Rex waves; balloons carry LinkedIn, GitHub, email and
    resume. "Say hi".
 
 ### Build approach (changed 2026-10-09)
@@ -83,7 +83,17 @@ Rex: "Don't use animus. Maybe just make your own 3d model. i want it customized 
 ### v3 steps
 1. Scaffold the app. DONE (first on Animus, then replaced by an own world)
 2. Home scene: personal props, hover highlight, corner cards. DONE (photos are placeholders)
-3. Projects scene in space with hover cards. TODO
-4. Connect scene in daylight. TODO
-5. Scroll transitions between the three, with snapping. TODO
-6. Single-file build, strict-policy test, publish. TODO
+3. Projects scene in space with hover cards. DONE
+4. Connect scene. DONE
+5. Scroll transitions between the three, with snapping. DONE (wheel, swipe, keys, dots; phones get their own framing)
+6. Single-file build, strict-policy test, publish. DONE (`npm run build && node scripts/artifact.mjs`)
+
+### Text size
+Rex: "keep all the text big like before like the title and github and stuff and projects." Name, project names,
+contact links and cards stay large; do not shrink them for polish.
+
+### Still open
+- Real photos for the cards (sports, food, travel, friends, pets), top artists, resume PDF, Europe beyond Spain.
+- Rex's hair and skin colors for the character (`LOOK` in src/home/Avatar.tsx are placeholders).
+- What Rex did at Photon Commerce and StudioApp.ai, if he wants more than "Team player? Ask them."
+- PoseAR art; the chairlift on the mountain faces away from the camera.
