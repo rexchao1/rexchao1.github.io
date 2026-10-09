@@ -116,3 +116,14 @@ my name ends up smaller and fixed on the screen".
 3. Copy pass on the text page with Rex; real photos if About gets any. TODO
 4. Phone and performance pass. TODO
 5. Merge to main and go live. TODO (ask Rex first)
+
+### v4 round 2 (2026-10-09), from Rex's feedback
+Rex: "better looking", builds as "a gallery where you can hover and it will expand", "less scrolling", LinkedIn,
+GitHub and resume at the bottom as bigger buttons with logos, a "cool background" on the front page, and not that
+blue for the name.
+- Opening: dark dusk sky with a dot field that warms near the pointer and a sunset glow at the bottom (`intro/Dusk.tsx`).
+  The name is pearl over the dusk and blends to the theme's ink as it docks. No blue.
+- Tooey and the builds share one Work gallery: two rows of tiles, Tooey wider at rest, hover opens a tile and shows its
+  line. Phones get one swipeable row. The internships sit under it as two logo chips.
+- About is a two-column list of short facts. Contact is big buttons (LinkedIn, GitHub, Resume, email with copy) at the
+  bottom only. Nav is Work, About, Contact.

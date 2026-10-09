@@ -81,14 +81,25 @@ function useDock(size: THREE.Vector3) {
   return { ref, progress: () => easeInOut(progress()) };
 }
 
-function Solid({ color }: { color: string }) {
+/** Pearl over the dark opening, the theme's ink once docked. */
+function useTone(from: string, to: string) {
+  return useMemo(() => {
+    const a = new THREE.Color(from), b = new THREE.Color(to), c = new THREE.Color();
+    return (e: number) => c.copy(a).lerp(b, THREE.MathUtils.smoothstep(e, 0.45, 0.95));
+  }, [from, to]);
+}
+
+function Solid({ from, to }: { from: string; to: string }) {
   const geo = useNameGeometry();
   const size = useMemo(() => geo.boundingBox!.getSize(new THREE.Vector3()), [geo]);
-  const { ref } = useDock(size);
+  const { ref, progress: prog } = useDock(size);
+  const tone = useTone(from, to);
+  const mat = useRef<THREE.MeshPhysicalMaterial>(null);
+  useFrame(() => void mat.current?.color.copy(tone(prog())));
   return (
     <group ref={ref}>
       <mesh geometry={geo}>
-        <meshPhysicalMaterial color={color} roughness={0.35} metalness={0} clearcoat={0.6} clearcoatRoughness={0.25} envMapIntensity={1.2} />
+        <meshPhysicalMaterial ref={mat} roughness={0.35} metalness={0} clearcoat={0.6} clearcoatRoughness={0.25} envMapIntensity={1.2} />
       </mesh>
     </group>
   );
@@ -96,7 +107,7 @@ function Solid({ color }: { color: string }) {
 
 const COUNT = 14000;
 
-function Particles({ color }: { color: string }) {
+function Particles({ from, to }: { from: string; to: string }) {
   const geo = useNameGeometry();
   const size = useMemo(() => geo.boundingBox!.getSize(new THREE.Vector3()), [geo]);
   const { ref, progress: prog } = useDock(size);
@@ -127,7 +138,7 @@ function Particles({ color }: { color: string }) {
       new THREE.ShaderMaterial({
         transparent: true,
         depthWrite: false,
-        uniforms: { uForm: { value: 0 }, uTime: { value: 0 }, uSize: { value: 3 }, uColor: { value: new THREE.Color(color) }, uDpr: { value: 1 } },
+        uniforms: { uForm: { value: 0 }, uTime: { value: 0 }, uSize: { value: 3 }, uColor: { value: new THREE.Color(from) }, uDpr: { value: 1 } },
         vertexShader: /* glsl */ `
           attribute vec3 scatter; attribute float seed;
           uniform float uForm, uTime, uSize, uDpr;
@@ -151,7 +162,7 @@ function Particles({ color }: { color: string }) {
       }),
     [],
   );
-  useEffect(() => void mat.uniforms.uColor.value.set(color), [color, mat]);
+  const tone = useTone(from, to);
   const born = useRef(performance.now());
   useFrame(({ clock, gl }) => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -159,6 +170,7 @@ function Particles({ color }: { color: string }) {
     mat.uniforms.uForm.value = reduced ? 1 : Math.min(1, age);
     mat.uniforms.uTime.value = clock.elapsedTime;
     mat.uniforms.uDpr.value = gl.getPixelRatio();
+    mat.uniforms.uColor.value.copy(tone(prog()));
     // Points stay a readable size: generous while big, fine once docked.
     mat.uniforms.uSize.value = THREE.MathUtils.lerp(Math.max(2.2, px.width / 520), 1.25, prog());
   });
@@ -169,18 +181,19 @@ function Particles({ color }: { color: string }) {
   );
 }
 
-export function Name({ look, color }: { look: Look; color: string }) {
+export function Name({ look, from, to }: { look: Look; from: string; to: string }) {
   return (
     <Canvas className="name3d" style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 60 }} dpr={[1, 2]} camera={{ fov: 30, position: [0, 0, 12] }} gl={{ alpha: true, antialias: true }} aria-hidden>
       <hemisphereLight args={['#ffffff', '#b8c4e8', 1.4]} />
       <directionalLight position={[3, 5, 6]} intensity={1.2} />
+      <directionalLight position={[-4, -3, 5]} intensity={0.9} color="#ffb070" />
       <Environment resolution={256}>
         <Lightformer form="rect" intensity={2.4} position={[0, 4, 4]} scale={[10, 2, 1]} />
         <Lightformer form="rect" intensity={1.2} position={[-6, 0, 2]} rotation-y={Math.PI / 2} scale={[6, 4, 1]} />
         <Lightformer form="rect" intensity={1.2} position={[6, -2, 2]} rotation-y={-Math.PI / 2} scale={[6, 4, 1]} />
         <Lightformer form="rect" intensity={1} position={[0, -5, 3]} rotation-x={-Math.PI / 2} scale={[10, 4, 1]} />
       </Environment>
-      {look === 'solid' ? <Solid color={color} /> : <Particles color={color} />}
+      {look === 'solid' ? <Solid from={from} to={to} /> : <Particles from={from} to={to} />}
     </Canvas>
   );
 }

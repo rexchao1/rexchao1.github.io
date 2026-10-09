@@ -1,28 +1,64 @@
 /**
- * The site: a 3D name that zooms out into the header, then one readable column of text.
+ * The site: a 3D name over a dusk backdrop that zooms out into the header, then a short readable page:
+ * intro, a gallery of work (hover a tile to open it), a few facts, and big contact buttons.
  * The header nav scrolls to each section and marks the one you're in. Normal scrolling throughout.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Name, type Look } from './intro/Name';
+import { Dusk } from './intro/Dusk';
 import { EMAIL, PROJECTS } from './content';
+import photonLogo from './assets/photon.png';
+import studioLogo from './assets/studioapp.png';
 
 const NAV = [
-  { id: 'tooey', label: 'Tooey' },
-  { id: 'builds', label: 'Builds' },
+  { id: 'work', label: 'Work' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
 ];
 
-const BUILDS = ['frontdesk', 'fetch', 'bruindesk', 'animus', 'posear', 'catcart', 'laoshu'].map((id) => PROJECTS[id]);
-
-const LINKS = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/rexchao1/' },
-  { label: 'GitHub', href: 'https://github.com/rexchao1' },
+/** Two rows; Tooey leads the first and starts wider. */
+const ROWS = [
+  ['tooey', 'frontdesk', 'fetch', 'bruindesk'],
+  ['animus', 'posear', 'catcart', 'laoshu'],
 ];
 
-/** The name's color comes from the theme so it reads on either background. */
-function useNameColor() {
-  const read = () => getComputedStyle(document.documentElement).getPropertyValue('--name').trim() || '#1b3fa0';
+const FACTS: [string, string][] = [
+  ['Baseball', 'I volunteer as an umpire for Tri-Valley youth baseball.'],
+  ['Skiing', "Tahoe every winter. I'm pretty good."],
+  ['Pickleball', 'Just for fun.'],
+  ['Food', 'Korean BBQ with friends is the usual LA plan.'],
+  ['Travel', 'Peru, Japan, China, Spain, Mexico, Alaska.'],
+  ['Pets', 'Rusty the dog, Petey and Jasper the cats.'],
+];
+
+const ICON: Record<string, ReactNode> = {
+  linkedin: (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="fill">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  ),
+  github: (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="fill">
+      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+    </svg>
+  ),
+  resume: (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="line">
+      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+      <path d="M14 2v4a2 2 0 0 0 2 2h4M10 13h4M10 17h4" />
+    </svg>
+  ),
+  mail: (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="line">
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </svg>
+  ),
+};
+
+/** The docked name takes the theme's ink, so it reads on either background. */
+function useInk() {
+  const read = () => getComputedStyle(document.documentElement).getPropertyValue('--name').trim() || '#171a26';
   const [c, setC] = useState(read);
   useEffect(() => {
     const mq = matchMedia('(prefers-color-scheme: dark)');
@@ -38,7 +74,7 @@ function useNameColor() {
   return c;
 }
 
-/** Which section is under the header. */
+/** Which section is under the header; also publishes the opening's progress as --intro for the CSS. */
 function useActive() {
   const [active, setActive] = useState<string | null>(null);
   useEffect(() => {
@@ -48,6 +84,7 @@ function useActive() {
         const el = document.getElementById(n.id);
         if (el && el.getBoundingClientRect().top < innerHeight * 0.4) cur = n.id;
       }
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = NAV[NAV.length - 1].id;
       setActive(cur);
       document.documentElement.style.setProperty('--intro', String(Math.min(1, scrollY / (innerHeight * 0.85))));
     };
@@ -83,30 +120,83 @@ function useReveal() {
   }, []);
 }
 
-function CopyEmail() {
-  const [done, setDone] = useState(false);
+function Gallery() {
+  // Mouse: hover opens a tile (CSS). Touch and keyboard: tap or Enter opens it.
+  const [open, setOpen] = useState<string | null>(null);
   return (
-    <span className="email">
-      <span className="addr">{EMAIL}</span>
+    <div className="gallery">
+      {ROWS.map((row, i) => (
+        <div className="row" key={i}>
+          {row.map((id) => {
+            const p = PROJECTS[id];
+            return (
+              <button
+                key={id}
+                type="button"
+                className="tile"
+                data-lead={id === 'tooey' || undefined}
+                data-tall={p.tall || undefined}
+                data-open={open === id || undefined}
+                aria-expanded={open === id}
+                style={{ '--tint': p.tint } as React.CSSProperties}
+                onClick={() => setOpen(open === id ? null : id)}
+              >
+                {p.img ? <img src={p.img} alt="" /> : <span className="ph">Screenshot soon</span>}
+                <span className="cap">
+                  <span className="t">
+                    {p.title}
+                    {p.tag && <small>{p.tag}</small>}
+                  </span>
+                  <span className="l">{p.line}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Contact() {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="contact">
+      <a className="big" href="https://www.linkedin.com/in/rexchao1/" target="_blank" rel="noreferrer" data-brand="linkedin">
+        {ICON.linkedin}
+        LinkedIn
+      </a>
+      <a className="big" href="https://github.com/rexchao1" target="_blank" rel="noreferrer" data-brand="github">
+        {ICON.github}
+        GitHub
+      </a>
+      <span className="big off" aria-disabled="true">
+        {ICON.resume}
+        Resume <small>soon</small>
+      </span>
       <button
         type="button"
+        className="big mail"
         onClick={(e) => {
-          const sel = () => getSelection()?.selectAllChildren(e.currentTarget.previousElementSibling!);
-          navigator.clipboard?.writeText(EMAIL).then(() => setDone(true), sel) ?? sel();
+          const addr = e.currentTarget.querySelector('.addr')!;
+          const sel = () => getSelection()?.selectAllChildren(addr);
+          if (navigator.clipboard) navigator.clipboard.writeText(EMAIL).then(() => setCopied(true), sel);
+          else sel();
         }}
       >
-        {done ? 'Copied' : 'Copy'}
+        {ICON.mail}
+        <span className="addr">{EMAIL}</span>
+        <small>{copied ? 'Copied' : 'Copy'}</small>
       </button>
-    </span>
+    </div>
   );
 }
 
 export function Page() {
   const [look, setLook] = useState<Look>(() => (location.hash === '#particles' ? 'particles' : 'solid'));
-  const color = useNameColor();
+  const ink = useInk();
   const active = useActive();
   useReveal();
-  const tooey = PROJECTS.tooey;
 
   return (
     <>
@@ -125,9 +215,10 @@ export function Page() {
         </div>
       </header>
 
-      <Name look={look} color={color} />
+      <Name look={look} from="#f6efe4" to={ink} />
 
       <section className="hero" id="top" aria-label="Rex Chao">
+        <Dusk />
         <h1 className="sr">Rex Chao</h1>
         <p className="tag">Computer science at UCLA. I build small, useful software.</p>
         <p className="hint" aria-hidden>
@@ -135,72 +226,53 @@ export function Page() {
         </p>
       </section>
 
-      <main className="col">
-        <section className="intro reveal">
+      <main>
+        <section className="col intro reveal">
           <p>
-            I study <b>computer science</b> at <b>UCLA</b>. I grew up in Danville, in the Bay Area, and moved to LA for school.
+            I study computer science at UCLA. I grew up in Danville, in the Bay Area, and moved to LA for school.
           </p>
           <p>
-            Right now I'm building <a href="#tooey">Tooey</a> with a cofounder and interning at <b>StudioApp.ai</b>. Before that I interned at <b>Photon Commerce</b>.
-          </p>
-          <p>I like making software for real people with real problems: a dental office's front desk, a restaurant's prep list, my own class schedule.</p>
-          <p className="links">
-            {LINKS.map((l) => (
-              <a key={l.label} href={l.href} target="_blank" rel="noreferrer">
-                {l.label}
-              </a>
-            ))}
-            <span className="soon">Resume (soon)</span>
+            Right now I'm building <a href="#work">Tooey</a> with a cofounder and interning at StudioApp.ai. I like making software for
+            real people with real problems: a dental office's front desk, a restaurant's prep list, my own class schedule.
           </p>
         </section>
 
-        <section id="tooey" className="reveal">
-          <h2>
-            Tooey <small>{tooey.tag}</small>
-          </h2>
-          <p>{tooey.line}</p>
-          <img className="shot" src={tooey.img} alt="Tooey's prep list for tomorrow" />
-        </section>
-
-        <section id="builds" className="reveal">
-          <h2>Builds</h2>
-          <ul className="builds">
-            {BUILDS.map((b) => (
-              <li key={b.id}>
-                <div className="text">
-                  <h3>{b.title}</h3>
-                  <p>{b.line}</p>
-                </div>
-                {b.img ? <img src={b.img} alt="" loading="lazy" /> : <span className="noimg">Screenshot soon</span>}
-              </li>
-            ))}
-          </ul>
+        <section id="work" className="wide reveal">
+          <h2>Work</h2>
+          <Gallery />
           <p className="team">
-            Can I work on a team? Ask <b>Photon Commerce</b> and <b>StudioApp.ai</b>.
+            <span>Can I work on a team? Ask them.</span>
+            <span className="logos">
+              <span className="logo">
+                <img src={photonLogo} alt="" />
+                Photon Commerce
+              </span>
+              <span className="logo">
+                <img src={studioLogo} alt="" />
+                StudioApp.ai
+              </span>
+            </span>
           </p>
         </section>
 
-        <section id="about" className="reveal">
-          <h2>About</h2>
-          <p>I volunteer as an umpire for Tri-Valley youth baseball. In the winter I ski at Tahoe, and I'm pretty good. Pickleball is just for fun.</p>
-          <p>In LA, Korean BBQ with friends is the usual plan. I've been to Peru, Japan, China, Spain, Mexico and Alaska.</p>
-          <p>At home there's Rusty, a dog, and two cats, Petey and Jasper.</p>
-        </section>
-
-        <section id="contact" className="reveal">
-          <h2>Say hi</h2>
-          <p>The fastest way to reach me is email.</p>
-          <p className="links">
-            <CopyEmail />
-            {LINKS.map((l) => (
-              <a key={l.label} href={l.href} target="_blank" rel="noreferrer">
-                {l.label}
-              </a>
+        <section id="about" className="col reveal">
+          <h2>Outside of code</h2>
+          <dl className="facts">
+            {FACTS.map(([k, v]) => (
+              <div key={k}>
+                <dt>{k}</dt>
+                <dd>{v}</dd>
+              </div>
             ))}
-          </p>
+          </dl>
         </section>
 
-        <footer>© 2026 Rex Chao</footer>
+        <section id="contact" className="col reveal">
+          <h2>Say hi</h2>
+          <Contact />
+        </section>
+
+        <footer className="col">© 2026 Rex Chao</footer>
       </main>
 
       <div className="looks" role="group" aria-label="Prototype: name look">
