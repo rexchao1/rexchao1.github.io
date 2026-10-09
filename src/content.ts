@@ -44,6 +44,7 @@ export const PROJECTS: Record<string, Spot> = {
   bruindesk: { id: 'bruindesk', title: 'Bruin Desk', line: 'My whole UCLA life in one private dashboard: classes, GPA, deadlines and degree progress.', shots: 0, img: bruindesk, tint: '#2774AE' },
   catcart: { id: 'catcart', title: 'CatCart', line: 'An endless runner starring a cat. Four worlds and four power-ups, built in SceneKit.', shots: 0, img: catcart, tall: true, tint: '#ff9a3d' },
   laoshu: { id: 'laoshu', title: 'Laoshu', line: 'Chinese flashcards for 5,400 HSK words, with reviews the next day and a week later.', shots: 0, img: laoshu, tall: true, tint: '#d93a3a' },
+  factory: { id: 'factory', title: 'Software Factory', line: 'My own setup for building with AI agents. I plan with them, then a task queue runs the work offline, with a critic pass and a web console that tracks every job.', shots: 0, tint: '#141a30' },
   posear: { id: 'posear', title: 'PoseAR', line: 'Tell a 3D person what to do and they do it in your iPhone camera.', shots: 1, tint: '#9b7bff' },
   photon: { id: 'photon', tag: 'Internship', title: 'Photon Commerce', line: 'Team player? Ask them.', shots: 0, tint: '#1F4E6E' },
   studioapp: { id: 'studioapp', tag: 'Internship, now', title: 'StudioApp.ai', line: 'Team player? Ask them too.', shots: 0, tint: '#1F4E6E' },

@@ -17,7 +17,7 @@ const NAV = [
 ];
 
 /** Tooey first; it carries a "Building now" badge. */
-const WORK = ['tooey', 'frontdesk', 'fetch', 'bruindesk', 'animus', 'posear', 'catcart', 'laoshu'];
+const WORK = ['tooey', 'factory', 'frontdesk', 'fetch', 'bruindesk', 'animus', 'catcart'];
 
 /** Each fact gets a small drawn badge until real photos arrive. */
 const FACTS: { k: string; v: string; tint: string; art: ReactNode }[] = [
@@ -182,6 +182,33 @@ function useReveal() {
   }, []);
 }
 
+/** Drawn tile for the Software Factory: plan, queue, agents, review, with work moving through. */
+function FactoryArt() {
+  const nodes = [
+    { x: 30, y: 40, label: 'Plan' },
+    { x: 150, y: 40, label: 'Queue' },
+    { x: 270, y: 40, label: 'Agents' },
+    { x: 150, y: 120, label: 'Critic' },
+    { x: 270, y: 120, label: 'Console' },
+  ];
+  return (
+    <svg className="factory" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <path className="wire" d="M130 60h20M250 60h20M320 80v40M250 140h20" />
+      {nodes.map((n) => (
+        <g key={n.label}>
+          <rect x={n.x} y={n.y} width="100" height="40" rx="10" />
+          <text x={n.x + 50} y={n.y + 25}>
+            {n.label}
+          </text>
+        </g>
+      ))}
+      <circle className="job" r="4">
+        <animateMotion dur="3.2s" repeatCount="indefinite" path="M80 60H320V140H200" />
+      </circle>
+    </svg>
+  );
+}
+
 function Gallery() {
   // Mouse: hover lifts and grows a tile (CSS). Touch and keyboard: tap or Enter opens it.
   const [open, setOpen] = useState<string | null>(null);
@@ -200,7 +227,7 @@ function Gallery() {
               style={{ '--tint': p.tint } as React.CSSProperties}
               onClick={() => setOpen(open === id ? null : id)}
             >
-              {p.img ? <img src={p.img} alt="" /> : <span className="ph">Screenshot soon</span>}
+              {p.img ? <img src={p.img} alt="" /> : id === 'factory' ? <FactoryArt /> : <span className="ph">Screenshot soon</span>}
               {id === 'tooey' && <span className="badge">Building now</span>}
               <span className="cap">
                 <span className="t">{p.title}</span>
@@ -296,19 +323,23 @@ export function Page() {
         <section id="work" className="wide reveal">
           <h2>Work</h2>
           <Gallery />
-          <p className="team">
-            <span>Can I work on a team? Ask them.</span>
-            <span className="logos">
-              <span className="logo">
-                <img src={photonLogo} alt="" />
-                Photon Commerce
-              </span>
-              <span className="logo">
+          <div className="team">
+            <p>Can I work on a team? Ask them.</p>
+            <div className="logos">
+              <div className="logo">
+                <img src={photonLogo} alt="" data-wide />
+                <span>
+                  Photon Commerce<small>Intern</small>
+                </span>
+              </div>
+              <div className="logo">
                 <img src={studioLogo} alt="" />
-                StudioApp.ai
-              </span>
-            </span>
-          </p>
+                <span>
+                  StudioApp.ai<small>Intern, now</small>
+                </span>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section id="about" className="col reveal">

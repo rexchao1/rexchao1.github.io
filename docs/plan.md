@@ -13,7 +13,7 @@ Recruiters. They leave with Rex's LinkedIn, email, resume and GitHub, and rememb
   Dark technical sections, a warm light About section ("the lights come up").
 - Voice: first person, short, specific, a little dry. Banned: passionate, seamless, innovative,
   crafting, leverage, cutting-edge, journey. No em dashes.
-- Flow and the software factory are left off (avoid a "vibecoder" read). Revisit later.
+- Flow is left off (avoid a "vibecoder" read). The Software Factory is in, by Rex's call on 2026-10-09.
 - Internships stay one line: "Can I work on a team? Ask Photon Commerce and StudioApp.ai."
 - No "what I'm looking for" line. Resume and GitHub links yes.
 - About: Danville to LA; sports photo strip (baseball with volunteer umpiring as community
@@ -134,3 +134,7 @@ Rex: work panels with "more white space in between" and "smaller", hover "expand
   carries a "Building now" badge. Phones: two across, tap opens a tile full width.
 - Outside of code: each fact is a small card with a drawn line badge in its own color (baseball, mountain, paddle,
   grill, plane, paw). These stand in until Rex sends photos.
+- Rex: drop Laoshu and PoseAR, add the Software Factory (this reverses the earlier "leave it off" decision). Its tile is
+  a drawn diagram (plan, queue, agents, critic, console) since there is no screenshot; the line comes from his resume.
+  Seven tiles: four on top, three centered below. Internships are now two bigger cards under a "Can I work on a team?
+  Ask them." heading; roles say only "Intern" until Rex says what he did.
