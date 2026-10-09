@@ -32,7 +32,7 @@ copy approved by Rex, working on phones, and the Animus opening loading fast.
 ## Steps
 1. Brainstorm content and order. DONE
 2. Capture project screenshots (Animus, Bruin Desk, Tooey, front desk, Fetch, CatCart, Laoshu). IN PROGRESS
-3. Design mockup on a Claude design canvas: https://claude.ai/artifact/AyCpeV1KCxthRheL92Nspz. IN PROGRESS (v1 with placeholders)
+3. Design direction. v1 page mockup rejected ("too much like a website"). Three scroll-through-3D directions built in design/tiles (A Drift, B Chrome, C Signal), live at https://claude.ai/artifact/KuuJJr1kUXEKyqP5rohBGp. WAITING ON REX TO PICK
 4. Rex sends photos, top artists, resume PDF, rest of Europe list. WAITING ON REX
 5. Approve copy and look. TODO
 6. Pick the stack and build the site, including the Animus scene port and scroll camera. TODO
