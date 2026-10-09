@@ -1,0 +1,21 @@
+/* One look on purpose: the 3D world sets the mood, overlays stay small. */
+:root{--ink:#1d1630;--paper:#fffaf2;--dim:#5d5470;--light:#fff6ea;--display:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif;--body:'Hanken Grotesk',system-ui,sans-serif;color-scheme:dark}
+html,body{margin:0;height:100%;background:#2a1f5c;color:var(--light);font-family:var(--body);overflow:hidden}
+.stage{position:fixed;inset:0}
+.name{position:fixed;left:clamp(16px,4vw,48px);top:calc(env(safe-area-inset-top,0px) + clamp(16px,4vh,40px));pointer-events:none;text-shadow:0 2px 18px rgba(40,10,60,.35)}
+.name h1{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,64px);letter-spacing:-.02em;line-height:.95}
+.name p{margin:8px 0 0;font-size:clamp(15px,1.4vw,18px);font-weight:500;opacity:.9}
+.hint{position:fixed;right:clamp(16px,4vw,48px);top:calc(env(safe-area-inset-top,0px) + clamp(20px,4.6vh,48px));margin:0;font-size:14px;font-weight:500;opacity:.85;pointer-events:none}
+.card{position:fixed;left:clamp(16px,4vw,48px);bottom:calc(env(safe-area-inset-bottom,0px) + clamp(16px,4vh,40px));width:min(340px,calc(100vw - 32px));box-sizing:border-box;background:var(--paper);color:var(--ink);border-radius:18px;padding:14px 14px 16px;box-shadow:0 18px 50px rgba(30,10,50,.35);border-top:6px solid var(--tint);opacity:0;transform:translateY(14px) scale(.98);transition:opacity .18s ease-out,transform .22s ease-out;pointer-events:none}
+.card.right{left:auto;right:clamp(16px,4vw,48px)}
+.card.on{opacity:1;transform:none}
+.card h2{margin:4px 2px 4px;font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em;text-wrap:balance}
+.card p{margin:0 2px;font-size:15px;line-height:1.45;color:var(--dim)}
+.shots{display:grid;gap:6px;grid-template-columns:repeat(var(--n,3),1fr);margin-bottom:10px}
+.shots[data-n="1"]{--n:1}.shots[data-n="2"]{--n:2}.shots[data-n="3"]{--n:3}
+.shot{aspect-ratio:4/5;border-radius:10px;background:linear-gradient(140deg,color-mix(in srgb,var(--tint) 75%,#fff),color-mix(in srgb,var(--tint) 35%,#fff));display:flex;align-items:flex-end;justify-content:flex-start;padding:6px 8px;box-sizing:border-box;max-width:100%}
+.shots[data-n="1"] .shot{aspect-ratio:16/9}
+.shot span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.9)}
+.chips{list-style:none;margin:10px 0 0;padding:0 2px;display:flex;flex-wrap:wrap;gap:6px}
+.chips li{font-size:13px;font-weight:600;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--tint) 14%,#fff);color:color-mix(in srgb,var(--tint) 70%,#000)}
+@media (max-width:600px){.hint{display:none}.card{width:auto;right:16px}}
