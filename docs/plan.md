@@ -127,3 +127,10 @@ blue for the name.
   line. Phones get one swipeable row. The internships sit under it as two logo chips.
 - About is a two-column list of short facts. Contact is big buttons (LinkedIn, GitHub, Resume, email with copy) at the
   bottom only. Nav is Work, About, Contact.
+
+### v4 round 3 (2026-10-09)
+Rex: work panels with "more white space in between" and "smaller", hover "expands up and grows"; art for the hobbies.
+- Work is a 4-across grid of small tiles with wide gaps; hover lifts a tile and grows it upward with its line. Tooey
+  carries a "Building now" badge. Phones: two across, tap opens a tile full width.
+- Outside of code: each fact is a small card with a drawn line badge in its own color (baseball, mountain, paddle,
+  grill, plane, paw). These stand in until Rex sends photos.

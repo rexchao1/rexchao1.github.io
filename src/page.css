@@ -51,30 +51,27 @@ section{display:flex;flex-direction:column;gap:18px;min-width:0}
 .intro{font-size:21px;line-height:1.55;gap:16px}
 h2{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.015em;line-height:1.15;margin:0;text-wrap:balance}
 
-/* Work gallery: rows of tiles; the hovered tile opens wide and shows its line. */
-.gallery{display:flex;flex-direction:column;gap:10px}
-.row{display:flex;gap:10px;height:clamp(230px,26vw,300px)}
-.tile{all:unset;box-sizing:border-box;position:relative;flex:1 1 0;min-width:0;overflow:hidden;border-radius:16px;cursor:pointer;background:var(--tint);transition:flex-grow .5s cubic-bezier(.2,.7,.2,1)}
-.tile[data-lead]{flex-grow:2.2}
-@media (hover:hover){.row:hover .tile{flex-grow:1}.row .tile:hover,.row .tile:focus-visible{flex-grow:3.2}}
-.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left top;transition:transform .6s cubic-bezier(.2,.7,.2,1),filter .4s}
+/* Work gallery: small tiles with room between them; hovering one lifts it and grows it upward to show its line. */
+.gallery{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,3vw,36px)}
+.gallery li{min-width:0;position:relative}
+.tile{all:unset;box-sizing:border-box;display:block;position:relative;width:100%;max-width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:14px;cursor:pointer;background:var(--tint);box-shadow:0 1px 2px rgba(10,14,30,.08),0 6px 18px rgba(10,14,30,.06);transform-origin:50% 100%;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s}
+@media (hover:hover){
+  .tile:hover,.tile:focus-visible{transform:translateY(-14px) scale(1.18);z-index:2;box-shadow:0 2px 4px rgba(10,14,30,.1),0 24px 48px rgba(10,14,30,.22)}
+}
+.gallery li:has(.tile:hover),.gallery li:has(.tile:focus-visible){z-index:2}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left top}
 .tile[data-tall] img{object-position:center 40%}
-.tile:hover img{transform:scale(1.03)}
-.ph{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(150deg,color-mix(in srgb,var(--tint) 85%,#fff),color-mix(in srgb,var(--tint) 70%,#000));color:rgba(255,255,255,.75);font-size:13px;letter-spacing:.06em}
-.cap{position:absolute;inset:auto 0 0;display:flex;flex-direction:column;gap:4px;padding:56px 16px 14px;background:linear-gradient(transparent,rgba(8,10,20,.82));color:#fff}
-.cap .t{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:baseline;gap:8px}
-.cap small{font-family:var(--body);font-weight:500;font-size:12px;opacity:.75;letter-spacing:.02em}
-.cap .l{font-size:15px;line-height:1.45;color:rgba(255,255,255,.88);max-width:38ch;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;opacity:0;max-height:0;transition:opacity .3s,max-height .4s}
-.row:not(:hover) .tile[data-lead] .l,.tile:hover .l,.tile:focus-visible .l,.tile[data-open] .l{opacity:1;max-height:5em;transition-delay:.12s}
-@media (hover:hover){.row:hover .tile[data-lead]:not(:hover) .l{opacity:0;max-height:0;transition-delay:0s}}
-/* Phones: one swipeable row with every line showing. */
+.ph{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(150deg,color-mix(in srgb,var(--tint) 85%,#fff),color-mix(in srgb,var(--tint) 70%,#000));color:rgba(255,255,255,.75);font-size:12px;letter-spacing:.06em}
+.badge{position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;letter-spacing:.02em}
+.cap{position:absolute;inset:auto 0 0;display:flex;flex-direction:column;gap:3px;padding:36px 12px 10px;background:linear-gradient(transparent,rgba(8,10,20,.85));color:#fff}
+.cap .t{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cap .l{font-size:12px;line-height:1.4;color:rgba(255,255,255,.9);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;opacity:0;max-height:0;transition:opacity .25s,max-height .4s}
+.tile:hover .l,.tile:focus-visible .l,.tile[data-open] .l{opacity:1;max-height:6em;transition-delay:.1s}
+/* Phones: two across; a tap opens a tile to full width with its line. */
 @media (max-width:700px){
-  .gallery{flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin-inline:calc(-1 * var(--gut));padding-inline:var(--gut);scroll-padding-inline:var(--gut);scrollbar-width:none}
-  .gallery::-webkit-scrollbar{display:none}
-  .row{display:contents}
-  .tile,.tile[data-lead]{flex:0 0 80%;aspect-ratio:4/5;scroll-snap-align:start}
-  .tile .l{opacity:1;max-height:5em}
-  .cap{padding:48px 14px 14px}
+  .gallery{grid-template-columns:1fr 1fr;gap:16px}
+  .gallery li:has(.tile[data-open]){grid-column:1 / -1}
+  .tile[data-open] .cap .l{font-size:14px}
 }
 
 .team{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin-top:6px !important;color:var(--dim);font-size:16px}
@@ -83,11 +80,13 @@ h2{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.01
 .logo img{height:22px;width:22px;object-fit:contain;border-radius:5px;background:#fff}
 
 /* Outside of code */
-.facts{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:18px 32px}
-.facts div{min-width:0;border-top:1px solid var(--line);padding-top:12px}
-.facts dt{font-family:var(--display);font-weight:700;font-size:17px}
-.facts dd{margin:2px 0 0;color:var(--dim);font-size:16px;line-height:1.5}
-@media (max-width:520px){.facts{grid-template-columns:1fr;gap:14px}}
+.facts{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.facts div{min-width:0;display:grid;grid-template-columns:48px 1fr;column-gap:14px;align-items:start;padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.facts .art{grid-row:span 2;width:48px;height:48px;box-sizing:border-box;padding:11px;border-radius:13px;background:color-mix(in srgb,var(--tint) 14%,transparent);color:var(--tint);fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.facts div:hover .art{transform:rotate(-8deg) scale(1.08)}
+.facts dt{font-family:var(--display);font-weight:700;font-size:17px;line-height:1.3}
+.facts dd{margin:2px 0 0;color:var(--dim);font-size:15px;line-height:1.45}
+@media (max-width:560px){.facts{grid-template-columns:1fr;gap:10px}}
 
 /* Contact: big buttons with logos */
 .contact{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}

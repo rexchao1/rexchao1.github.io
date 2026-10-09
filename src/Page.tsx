@@ -16,19 +16,81 @@ const NAV = [
   { id: 'contact', label: 'Contact' },
 ];
 
-/** Two rows; Tooey leads the first and starts wider. */
-const ROWS = [
-  ['tooey', 'frontdesk', 'fetch', 'bruindesk'],
-  ['animus', 'posear', 'catcart', 'laoshu'],
-];
+/** Tooey first; it carries a "Building now" badge. */
+const WORK = ['tooey', 'frontdesk', 'fetch', 'bruindesk', 'animus', 'posear', 'catcart', 'laoshu'];
 
-const FACTS: [string, string][] = [
-  ['Baseball', 'I volunteer as an umpire for Tri-Valley youth baseball.'],
-  ['Skiing', "Tahoe every winter. I'm pretty good."],
-  ['Pickleball', 'Just for fun.'],
-  ['Food', 'Korean BBQ with friends is the usual LA plan.'],
-  ['Travel', 'Peru, Japan, China, Spain, Mexico, Alaska.'],
-  ['Pets', 'Rusty the dog, Petey and Jasper the cats.'],
+/** Each fact gets a small drawn badge until real photos arrive. */
+const FACTS: { k: string; v: string; tint: string; art: ReactNode }[] = [
+  {
+    k: 'Baseball',
+    v: 'I volunteer as an umpire for Tri-Valley youth baseball.',
+    tint: '#d6453a',
+    art: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M6.2 5.6c2.4 2.6 2.4 10.2 0 12.8M17.8 5.6c-2.4 2.6-2.4 10.2 0 12.8" />
+        <path d="M7.4 8.2h1.6M7.9 11.2h1.7M7.4 14.4h1.6M15 8.2h1.6M14.4 11.2h1.7M15 14.4h1.6" />
+      </>
+    ),
+  },
+  {
+    k: 'Skiing',
+    v: "Tahoe every winter. I'm pretty good.",
+    tint: '#3a78d6',
+    art: (
+      <>
+        <path d="m2.5 20 7-12 4 6.5 2.5-3.5 5.5 9z" />
+        <path d="m7 12.3 1.4 1.2 1.6-1.6 1.4 1.4" />
+        <circle cx="18" cy="5" r="1.6" />
+      </>
+    ),
+  },
+  {
+    k: 'Pickleball',
+    v: 'Just for fun.',
+    tint: '#2f9e6a',
+    art: (
+      <>
+        <path d="M15 3.2a5.4 5.4 0 0 1 5.8 5.8l-.4.9-6.6 6.6a2.6 2.6 0 0 1-3.7 0l-2.6-2.6a2.6 2.6 0 0 1 0-3.7L14.1 3.6z" />
+        <path d="m8.6 15.4-5.1 5.1" />
+        <circle cx="5.2" cy="5.6" r="2.2" />
+      </>
+    ),
+  },
+  {
+    k: 'Food',
+    v: 'Korean BBQ with friends is the usual LA plan.',
+    tint: '#e0702e',
+    art: (
+      <>
+        <circle cx="12" cy="14.5" r="7" />
+        <path d="M6.3 12h11.4M5 14.5h14M6.3 17h11.4" />
+        <path d="M9 2.8c-1 1.2 1 1.9 0 3.2M15 2.8c-1 1.2 1 1.9 0 3.2" />
+      </>
+    ),
+  },
+  {
+    k: 'Travel',
+    v: 'Peru, Japan, China, Spain, Mexico, Alaska.',
+    tint: '#1f9aa3',
+    art: (
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+    ),
+  },
+  {
+    k: 'Pets',
+    v: 'Rusty the dog, Petey and Jasper the cats.',
+    tint: '#c98a2b',
+    art: (
+      <>
+        <circle cx="5.5" cy="10" r="1.9" />
+        <circle cx="9.5" cy="5.8" r="1.9" />
+        <circle cx="14.5" cy="5.8" r="1.9" />
+        <circle cx="18.5" cy="10" r="1.9" />
+        <path d="M12 11.5c-3 0-5.6 3.6-5.6 5.8 0 1.5 1.2 2.6 2.8 2.6 1.2 0 1.8-.6 2.8-.6s1.6.6 2.8.6c1.6 0 2.8-1.1 2.8-2.6 0-2.2-2.6-5.8-5.6-5.8z" />
+      </>
+    ),
+  },
 ];
 
 const ICON: Record<string, ReactNode> = {
@@ -121,40 +183,34 @@ function useReveal() {
 }
 
 function Gallery() {
-  // Mouse: hover opens a tile (CSS). Touch and keyboard: tap or Enter opens it.
+  // Mouse: hover lifts and grows a tile (CSS). Touch and keyboard: tap or Enter opens it.
   const [open, setOpen] = useState<string | null>(null);
   return (
-    <div className="gallery">
-      {ROWS.map((row, i) => (
-        <div className="row" key={i}>
-          {row.map((id) => {
-            const p = PROJECTS[id];
-            return (
-              <button
-                key={id}
-                type="button"
-                className="tile"
-                data-lead={id === 'tooey' || undefined}
-                data-tall={p.tall || undefined}
-                data-open={open === id || undefined}
-                aria-expanded={open === id}
-                style={{ '--tint': p.tint } as React.CSSProperties}
-                onClick={() => setOpen(open === id ? null : id)}
-              >
-                {p.img ? <img src={p.img} alt="" /> : <span className="ph">Screenshot soon</span>}
-                <span className="cap">
-                  <span className="t">
-                    {p.title}
-                    {p.tag && <small>{p.tag}</small>}
-                  </span>
-                  <span className="l">{p.line}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      ))}
-    </div>
+    <ul className="gallery">
+      {WORK.map((id) => {
+        const p = PROJECTS[id];
+        return (
+          <li key={id}>
+            <button
+              type="button"
+              className="tile"
+              data-tall={p.tall || undefined}
+              data-open={open === id || undefined}
+              aria-expanded={open === id}
+              style={{ '--tint': p.tint } as React.CSSProperties}
+              onClick={() => setOpen(open === id ? null : id)}
+            >
+              {p.img ? <img src={p.img} alt="" /> : <span className="ph">Screenshot soon</span>}
+              {id === 'tooey' && <span className="badge">Building now</span>}
+              <span className="cap">
+                <span className="t">{p.title}</span>
+                <span className="l">{p.line}</span>
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -258,10 +314,13 @@ export function Page() {
         <section id="about" className="col reveal">
           <h2>Outside of code</h2>
           <dl className="facts">
-            {FACTS.map(([k, v]) => (
-              <div key={k}>
-                <dt>{k}</dt>
-                <dd>{v}</dd>
+            {FACTS.map((f) => (
+              <div key={f.k} style={{ '--tint': f.tint } as React.CSSProperties}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="art">
+                  {f.art}
+                </svg>
+                <dt>{f.k}</dt>
+                <dd>{f.v}</dd>
               </div>
             ))}
           </dl>
