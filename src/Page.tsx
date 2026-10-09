@@ -317,7 +317,7 @@ export function Page() {
       <section className="hero" id="top" aria-label="Rex Chao">
         <Dusk />
         <h1 className="sr">Rex Chao</h1>
-        <p className="tag">Computer science at UCLA. I build small, useful software.</p>
+        <p className="tag">Computer science at UCLA.</p>
         <p className="hint" aria-hidden>
           Scroll
         </p>
@@ -349,8 +349,9 @@ export function Page() {
               <div className="logo">
                 <img src={studioLogo} alt="" />
                 <span>
-                  StudioApp.ai<small>Intern, now</small>
+                  StudioApp.ai<small>Intern</small>
                 </span>
+                <em className="now">Current</em>
               </div>
             </div>
           </div>

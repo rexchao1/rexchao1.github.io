@@ -104,6 +104,7 @@ main{overflow-x:clip}
 .logo span{display:flex;flex-direction:column;min-width:0}
 .logo small{font-weight:500;font-size:14px;color:var(--dim)}
 .logo img[data-wide]{width:120px;padding:10px}
+.logo .now{margin-left:auto;flex:none;font-style:normal;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:999px;padding:4px 10px}
 @media (max-width:620px){.logos{grid-template-columns:1fr}}
 
 /* Outside of code */
