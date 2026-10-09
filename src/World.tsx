@@ -42,10 +42,13 @@ void main() {
   float s = max(dot(d, normalize(uSunDir)), 0.0);
   col += uSun * (pow(s, 900.0) * 1.6 + pow(s, 12.0) * 0.25);
   // stars
-  vec3 cell = floor(d * 220.0);
+  vec3 q = d * 380.0;
+  vec3 cell = floor(q);
   float r = hash(cell);
+  float dist = length(fract(q) - 0.5);
   float tw = 0.6 + 0.4 * sin(uTime * 2.0 + r * 40.0);
-  col += vec3(step(0.9975, r) * tw * uStars * smoothstep(-0.05, 0.25, h));
+  float star = step(0.985, r) * smoothstep(0.22, 0.0, dist) * (0.4 + 0.6 * fract(r * 97.0));
+  col += vec3(star * tw * uStars * 1.4 * smoothstep(-0.05, 0.25, h));
   gl_FragColor = vec4(col, 1.0);
 }`;
 

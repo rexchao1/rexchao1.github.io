@@ -6,7 +6,7 @@ html,body{margin:0;height:100%;background:#2a1f5c;color:var(--light);font-family
 .name h1{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,64px);letter-spacing:-.02em;line-height:.95}
 .name p{margin:8px 0 0;font-size:clamp(15px,1.4vw,18px);font-weight:500;opacity:.9}
 .hint{position:fixed;right:clamp(16px,4vw,48px);top:calc(env(safe-area-inset-top,0px) + clamp(20px,4.6vh,48px));margin:0;font-size:14px;font-weight:500;opacity:.85;pointer-events:none}
-.card{position:fixed;left:clamp(16px,4vw,48px);bottom:calc(env(safe-area-inset-bottom,0px) + clamp(16px,4vh,40px));width:min(340px,calc(100vw - 32px));box-sizing:border-box;background:var(--paper);color:var(--ink);border-radius:18px;padding:14px 14px 16px;box-shadow:0 18px 50px rgba(30,10,50,.35);border-top:6px solid var(--tint);opacity:0;transform:translateY(14px) scale(.98);transition:opacity .18s ease-out,transform .22s ease-out;pointer-events:none}
+.card{position:fixed;z-index:30;left:clamp(16px,4vw,48px);bottom:calc(env(safe-area-inset-bottom,0px) + clamp(16px,4vh,40px));width:min(340px,calc(100vw - 32px));box-sizing:border-box;background:var(--paper);color:var(--ink);border-radius:18px;padding:14px 14px 16px;box-shadow:0 18px 50px rgba(30,10,50,.35);border-top:6px solid var(--tint);opacity:0;transform:translateY(14px) scale(.98);transition:opacity .18s ease-out,transform .22s ease-out;pointer-events:none}
 .card.right{left:auto;right:clamp(16px,4vw,48px)}
 .card.on{opacity:1;transform:none}
 .card h2{margin:4px 2px 4px;font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em;text-wrap:balance}
@@ -19,3 +19,49 @@ html,body{margin:0;height:100%;background:#2a1f5c;color:var(--light);font-family
 .chips{list-style:none;margin:10px 0 0;padding:0 2px;display:flex;flex-wrap:wrap;gap:6px}
 .chips li{font-size:13px;font-weight:600;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--tint) 14%,#fff);color:color-mix(in srgb,var(--tint) 70%,#000)}
 @media (max-width:600px){.hint{display:none}.card{width:auto;right:16px}}
+/* scene-specific overlays fade with html[data-scene] */
+.s0,.s1,.s2{transition:opacity .5s ease-out .2s;opacity:0;pointer-events:none}
+html[data-scene="0"] .s0,html[data-scene="1"] .s1,html[data-scene="2"] .s2{opacity:1}
+html:not([data-scene="1"]) .label{opacity:0}
+html:not([data-scene="2"]) .balloon{opacity:0;pointer-events:none}
+.dots,.next,.card{z-index:30}
+.title{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + clamp(90px,15vh,150px));text-align:center;padding-inline:16px}
+.title h2{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,56px);letter-spacing:-.02em}
+.title p{margin:6px 0 0;font-size:15px;opacity:.85}
+.s2 h2{font-size:clamp(48px,8vw,108px);color:#fff;text-shadow:0 4px 30px rgba(40,90,160,.45)}
+.s2 p{font-size:17px;font-weight:600;text-shadow:0 2px 12px rgba(40,90,160,.5)}
+html[data-scene="2"] .s2.title{left:auto;right:clamp(56px,8vw,120px);text-align:right;top:calc(env(safe-area-inset-top,0px) + clamp(40px,12vh,120px))}
+@media (max-width:600px){html[data-scene="2"] .s2.title{left:0;right:0;text-align:center;top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 70px)}}
+.labels,.balloons{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.label,.balloon{position:absolute;left:0;top:0;will-change:transform}
+.balloon{pointer-events:auto}
+.label{font-family:var(--display);font-weight:700;font-size:14px;color:#fff;white-space:nowrap;text-align:center;text-shadow:0 1px 8px rgba(0,0,20,.8);transition:opacity .4s;user-select:none}
+.label small{display:block;font-family:var(--body);font-weight:500;font-size:12px;opacity:.75}
+.label.big{font-size:26px}
+.label.big small{font-size:14px}
+.balloon{transition:opacity .4s;font-size:15px;font-weight:600;white-space:nowrap}
+.balloon a,.balloon .mailrow,.balloon .soon{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:4px 14px;border-radius:99px;background:#fff;color:#1d1630;text-decoration:none;box-shadow:0 6px 20px rgba(20,40,90,.25);border:2px solid var(--b)}
+.balloon a:hover{background:var(--b);color:#fff}
+.balloon a:focus-visible,.balloon button:focus-visible,.dots button:focus-visible,.next:focus-visible{outline:3px solid #ffd23f;outline-offset:3px}
+.balloon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.balloon .addr{user-select:all}
+.balloon button{font:inherit;font-size:13px;border:0;border-radius:99px;padding:4px 10px;background:var(--b);color:#fff;cursor:pointer;min-height:28px}
+.balloon button[data-done]{background:#2e9e5b}
+.balloon .soon{opacity:.8}
+.balloon .soon small{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.6}
+.dots{position:fixed;right:clamp(12px,2.4vw,32px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px}
+.dots button{display:flex;align-items:center;justify-content:flex-end;gap:10px;background:none;border:0;color:#fff;cursor:pointer;min-height:32px;padding:4px;font:600 13px var(--body)}
+.dots button span{opacity:0;transition:opacity .2s}
+.dots button:hover span,.dots button[aria-current] span{opacity:.9}
+.dots button::after{content:'';width:10px;height:10px;border-radius:99px;border:2px solid #fff;box-sizing:border-box;transition:background .2s,transform .2s}
+.dots button[aria-current]::after{background:#fff;transform:scale(1.2)}
+.next{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:99px;padding:8px 16px;min-height:40px;font:600 14px var(--body);cursor:pointer;backdrop-filter:blur(8px)}
+.next:hover{background:rgba(255,255,255,.26)}
+.next svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.shotimg{border-radius:10px;overflow:hidden;margin-bottom:10px;background:#eee}
+.shotimg img{display:block;width:100%;height:auto;max-height:220px;object-fit:cover;object-position:top}
+.shotimg.tall img{max-height:200px;object-fit:cover;object-position:center 30%}
+.card .tag{margin:2px 2px 0;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tint)}
+.txt{display:flex;flex-direction:column}
+.name{transition:opacity .4s}
+html[data-scene="2"] .name{opacity:0}
