@@ -1,0 +1,6 @@
+{
+  "name": "rexchao-site",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build" }
+}
