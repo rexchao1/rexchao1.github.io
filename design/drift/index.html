@@ -1,0 +1,410 @@
+<title>Rex Chao</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Hanken+Grotesk:wght@400;500&display=swap">
+<style>
+/* One fixed WebGL world; the tall track only drives the camera. Single dark look on purpose. */
+:root{--bg:#04060A;--ink:#DCE6F2;--accent:#8FD3FF;--display:'Michroma',sans-serif;--body:'Hanken Grotesk',system-ui,sans-serif;color-scheme:dark}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+.track{height:1100vh}
+.ov{position:fixed;pointer-events:none;opacity:0;will-change:opacity,transform;margin:0}
+.ov a{pointer-events:auto;color:var(--ink)}
+.name{left:clamp(16px,5vw,72px);bottom:clamp(28px,8vh,88px);font-family:var(--display);font-size:clamp(34px,6vw,84px);letter-spacing:.02em;font-weight:400;line-height:.95;opacity:1}
+.sub{display:block;font-family:var(--body);font-size:17px;letter-spacing:0;opacity:.7;margin-top:18px;line-height:1.5}
+.word{left:50%;top:14vh;transform:translateX(-50%);font-family:var(--display);font-size:clamp(20px,3vw,40px);white-space:nowrap}
+.word small{display:block;text-align:center;font-family:var(--body);font-size:15px;opacity:.65;margin-top:10px;white-space:normal}
+#caption{position:fixed;left:clamp(16px,5vw,72px);bottom:clamp(28px,8vh,72px);font-size:clamp(20px,2.4vw,30px);transition:opacity .3s ease;opacity:0;pointer-events:none;margin:0}
+.contact{left:clamp(16px,5vw,72px);right:16px;bottom:clamp(28px,10vh,96px)}
+.contact h2{font-family:var(--display);font-size:clamp(44px,9vw,140px);font-weight:400;margin:0 0 20px;line-height:.9}
+.links{display:flex;flex-wrap:wrap;gap:12px 28px;font-size:18px}
+.links a{text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:3px}
+.links a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.hint{right:clamp(16px,5vw,72px);bottom:clamp(28px,8vh,88px);font-size:14px}
+#fail{position:fixed;inset:auto 16px 16px 16px;font-size:14px;opacity:.7}
+</style>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="track"></div>
+<h1 class="ov name" data-in="-1" data-out="0.06">Rex Chao<span class="sub">I made Wren. I study CS at UCLA.</span></h1>
+<p class="ov hint" data-in="-1" data-out="0.04">Scroll</p>
+<p id="caption" aria-live="polite"></p>
+<p class="ov word" data-in="0.46" data-out="0.53">On repeat</p>
+<p class="ov word" data-in="0.565" data-out="0.65">Out of Danville</p>
+<p class="ov word" data-in="0.69" data-out="0.76">Tooey<small>Cofounder. Prep forecasts for restaurants.</small></p>
+<p class="ov word" data-in="0.80" data-out="0.86">Builds</p>
+<p class="ov word" data-in="0.865" data-out="0.92">Team player?<small>Ask Photon Commerce and StudioApp.ai</small></p>
+<div class="ov contact" data-in="0.95" data-out="2">
+<h2>Say hi</h2>
+<nav class="links"><a href="https://www.linkedin.com/in/rexchao1/">LinkedIn</a><a href="https://github.com/rexchao1">GitHub</a><a href="#top">Resume</a><span style="opacity:.8;user-select:all">rexchao1@gmail.com</span></nav>
+</div>
+<p id="fail" hidden></p>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script>
+
+// Picks random points on a mesh surface, weighted by triangle area.
+function makeSampler(geometry) {
+  const g = geometry.index ? geometry.toNonIndexed() : geometry;
+  const p = g.attributes.position.array, n = p.length / 9, cum = new Float32Array(n);
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    a.fromArray(p, i * 9); b.fromArray(p, i * 9 + 3); c.fromArray(p, i * 9 + 6);
+    total += b.clone().sub(a).cross(c.clone().sub(a)).length() / 2; cum[i] = total;
+  }
+  return { sample(out) {
+    const r = Math.random() * total; let lo = 0, hi = n - 1;
+    while (lo < hi) { const m = (lo + hi) >> 1; if (cum[m] < r) lo = m + 1; else hi = m; }
+    let u = Math.random(), v = Math.random(); if (u + v > 1) { u = 1 - u; v = 1 - v; }
+    a.fromArray(p, lo * 9); b.fromArray(p, lo * 9 + 3); c.fromArray(p, lo * 9 + 6);
+    return out.copy(a).addScaledVector(b.sub(a), u).addScaledVector(c.sub(a), v);
+  } };
+}
+
+// Shared scroll-through-a-world prototype. Each tile passes a theme that decides
+// how objects are drawn: as particles ("points"), polished metal ("chrome") or
+// line work with dithered photos ("wire").
+
+const PHOTOS = [
+  { label: 'Danville', caption: 'Danville to LA', w: 2.4, h: 3 },
+  { label: 'Baseball', caption: 'Volunteer umpire, Tri-Valley', w: 3, h: 2.2 },
+  { label: 'Tahoe', caption: 'Tahoe, every winter', w: 2.2, h: 3 },
+  { label: 'Pickleball', caption: 'Pickleball, for fun', w: 2.6, h: 2 },
+  { label: 'KBBQ', caption: 'LA eats', w: 2.4, h: 2.4 },
+  { label: 'Friends', caption: 'The crew', w: 3, h: 2.1 },
+  { label: 'Rusty', caption: 'Rusty', w: 2.2, h: 2.8 },
+  { label: 'Petey', caption: 'Petey', w: 2.2, h: 2.6 },
+  { label: 'Jasper', caption: 'Jasper', w: 2.4, h: 2.4 },
+];
+const BUILDS = ['Front desk', 'Fetch', 'Bruin Desk', 'PoseAR', 'CatCart', 'Laoshu'];
+const PLACES = [ // lon, lat
+  ['Alaska', -150, 61], ['Mexico', -102, 23], ['Peru', -75, -10], ['Spain', -4, 40],
+  ['Europe', 10, 48], ['China', 105, 35], ['Japan', 138, 36],
+];
+const HOME = [-122, 37.8];
+
+// Camera stops: scroll progress, camera position, look target.
+const KEYS = [
+  [0.00, [0, 1.7, 7.5], [0, 1.6, 0]],
+  [0.07, [3.2, 2.4, 4.2], [0, 1.7, 0]],
+  [0.15, [0, 2.2, -10], [0, 2, -26]],
+  [0.27, [-0.6, 2, -30], [0.4, 2, -46]],
+  [0.39, [0.6, 2, -50], [0, 2, -66]],
+  [0.49, [0, 2.1, -69], [0, 2, -79]],
+  [0.60, [0, 1.8, -84], [0, 1.6, -98]],
+  [0.71, [0, 2, -113], [0, 2, -122]],
+  [0.82, [0, 2.4, -135], [0, 2, -148]],
+  [0.90, [0, 2.4, -135], [0, 2, -148]],
+  [1.00, [0, 3.4, -127], [0, 2.2, -150]],
+];
+
+const smooth = (t) => t * t * (3 - 2 * t);
+const clamp01 = (t) => Math.min(1, Math.max(0, t));
+const v3 = (a) => new THREE.Vector3(...a);
+
+function cameraAt(p) {
+  let i = 0;
+  while (i < KEYS.length - 2 && p > KEYS[i + 1][0]) i++;
+  const [p0, a0, l0] = KEYS[i];
+  const [p1, a1, l1] = KEYS[i + 1];
+  const t = smooth(clamp01((p - p0) / (p1 - p0)));
+  return { pos: v3(a0).lerp(v3(a1), t), look: v3(l0).lerp(v3(l1), t) };
+}
+
+function textTexture(draw, w, h) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.encoding = THREE.sRGBEncoding;
+  t.anisotropy = 4;
+  return t;
+}
+
+// A stand-in photo: tonal field with grain and the subject's name, until real photos arrive.
+function photoTexture(theme, label, seed) {
+  return textTexture((g, w, h) => {
+    const tones = theme.photoTones;
+    g.fillStyle = tones[seed % tones.length];
+    g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 2600; i++) {
+      g.fillStyle = `rgba(255,255,255,${Math.random() * 0.05})`;
+      g.fillRect(Math.random() * w, Math.random() * h, 2, 2);
+    }
+    g.fillStyle = 'rgba(255,255,255,.08)';
+    g.beginPath(); g.arc(w * 0.62, h * 0.4, w * 0.28, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.55)';
+    g.font = `500 ${Math.round(w / 14)}px ${theme.bodyFont}`;
+    g.fillText(`[ ${label} ]`, w * 0.07, h * 0.92);
+  }, 512, 640);
+}
+
+function prepTexture(theme) {
+  return textTexture((g, w, h) => {
+    g.fillStyle = '#F2F2EE'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#16171A';
+    g.font = `600 40px ${theme.bodyFont}`; g.fillText('Prep, Tuesday', 48, 90);
+    g.fillRect(48, 112, w - 96, 3);
+    const rows = [['Cheeseburger', 45], ['Chicken sandwich', 33], ['Caesar salad', 26], ['House pasta', 20]];
+    g.font = `400 30px ${theme.bodyFont}`;
+    rows.forEach(([n, q], i) => {
+      const y = 190 + i * 78;
+      g.fillStyle = '#16171A'; g.fillText(n, 48, y);
+      g.textAlign = 'right'; g.fillText(String(q), w - 48, y); g.textAlign = 'left';
+      g.fillStyle = '#C9C9C2'; g.fillRect(48, y + 26, w - 96, 1);
+    });
+  }, 512, 560);
+}
+
+function screenTexture(theme, name, i) {
+  return textTexture((g, w, h) => {
+    g.fillStyle = theme.screenBg; g.fillRect(0, 0, w, h);
+    g.fillStyle = 'rgba(255,255,255,.06)';
+    for (let r = 0; r < 6; r++) g.fillRect(40, 120 + r * 46, w * (0.35 + ((r * 7 + i * 3) % 5) / 10), 18);
+    g.fillStyle = theme.inkCss;
+    g.font = `600 44px ${theme.displayFont}`; g.fillText(name, 40, h - 50);
+  }, 640, 400);
+}
+
+function recordTexture(theme) {
+  return textTexture((g, w) => {
+    const r = w / 2;
+    g.fillStyle = '#0c0c0e'; g.beginPath(); g.arc(r, r, r, 0, Math.PI * 2); g.fill();
+    for (let k = r * 0.38; k < r * 0.98; k += 3) {
+      g.strokeStyle = `rgba(255,255,255,${0.03 + Math.random() * 0.05})`;
+      g.beginPath(); g.arc(r, r, k, 0, Math.PI * 2); g.stroke();
+    }
+    g.fillStyle = theme.accentCss; g.beginPath(); g.arc(r, r, r * 0.34, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#0c0c0e'; g.beginPath(); g.arc(r, r, r * 0.04, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = 'rgba(255,255,255,.35)'; g.lineWidth = 3; g.beginPath(); g.arc(r, r, r - 2, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.moveTo(r, r); g.arc(r, r, r * 0.96, -0.5, -0.32); g.fill();
+  }, 512, 512);
+}
+
+// Crude continents as ellipses in lon/lat, enough for a dot map.
+const LAND = [
+  [-100, 45, 32, 18], [-150, 63, 14, 7], [-85, 15, 10, 9], [-62, -12, 16, 22], [-68, -40, 7, 12],
+  [15, 50, 22, 10], [-3, 40, 6, 4], [20, 5, 20, 26], [25, -25, 12, 10], [90, 50, 50, 16],
+  [100, 25, 22, 12], [78, 20, 9, 10], [138, 37, 3, 7], [134, -25, 17, 11], [-42, 72, 13, 8],
+];
+const isLand = (lon, lat) => LAND.some(([x, y, rx, ry]) => ((lon - x) / rx) ** 2 + ((lat - y) / ry) ** 2 < 1);
+const mapXY = (lon, lat) => [(lon / 180) * 8, (lat / 90) * 4.2];
+
+async function start(theme) {
+  await document.fonts.ready;
+  const canvas = document.getElementById('gl');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  const scene = new THREE.Scene();
+  const bg = new THREE.Color(theme.bg);
+  scene.background = bg;
+  scene.fog = new THREE.Fog(bg, theme.fogNear, theme.fogFar);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
+
+  if (theme.style === 'chrome') {
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  }
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(4, 8, 6); scene.add(key);
+
+  const ink = new THREE.Color(theme.ink);
+  const accent = new THREE.Color(theme.accent);
+  const pointMat = (size = 0.03, color = ink) => new THREE.PointsMaterial({ color, size, transparent: true, opacity: 0.9, depthWrite: false });
+  const chromeMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, metalness: 1, roughness: 0.14 });
+  const lineMat = new THREE.LineBasicMaterial({ color: ink, transparent: true, opacity: 0.85 });
+
+  // One solid drawn three ways.
+  function solid(geometry, count = 1800) {
+    if (theme.style === 'points') {
+      const mesh = new THREE.Mesh(geometry);
+      const s = makeSampler(geometry);
+      const pos = new Float32Array(count * 3); const tmp = new THREE.Vector3();
+      for (let i = 0; i < count; i++) { s.sample(tmp); pos.set([tmp.x, tmp.y, tmp.z], i * 3); }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      return new THREE.Points(g, pointMat(0.022));
+    }
+    if (theme.style === 'chrome') return new THREE.Mesh(geometry, chromeMat);
+    return new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 1), lineMat);
+  }
+
+  // Dithered photos for the wire tile: ordered 4x4 Bayer threshold in two tones.
+  const ditherMat = (map) => new THREE.ShaderMaterial({
+    uniforms: { map: { value: map }, ink: { value: ink }, bg: { value: new THREE.Color(theme.bg) }, focus: { value: 0 } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+    fragmentShader: `uniform sampler2D map; uniform vec3 ink; uniform vec3 bg; uniform float focus; varying vec2 vUv;
+      float bayer(vec2 p){ int x=int(mod(p.x,4.)), y=int(mod(p.y,4.)); int i=x+y*4;
+        int m[16]=int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5); return float(m[i])/16.; }
+      void main(){ vec3 c=texture2D(map,vUv).rgb; float l=dot(c,vec3(.299,.587,.114));
+        float cell = mix(6., 1.5, focus);
+        float d = step(bayer(floor(gl_FragCoord.xy/cell)), l*1.6);
+        gl_FragColor = vec4(mix(bg, ink, d*mix(.5,1.,focus)), 1.); }`,
+  });
+
+  // Space dust for depth.
+  {
+    const n = theme.dust; const pos = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) pos.set([(Math.random() - 0.5) * 80, (Math.random() - 0.3) * 50, 20 - Math.random() * 200], i * 3);
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: ink, size: 0.05, transparent: true, opacity: 0.45, depthWrite: false })));
+  }
+
+  // Station 1: Wren stand-in, until the real Animus character is ported.
+  const wren = new THREE.Group();
+  const parts = [
+    [new THREE.SphereGeometry(0.42, 32, 24), [0, 2.55, 0]],
+    [new THREE.CapsuleGeometry(0.46, 0.9, 8, 24), [0, 1.55, 0]],
+    [new THREE.CapsuleGeometry(0.14, 0.75, 6, 12), [-0.62, 1.55, 0], 0.18],
+    [new THREE.CapsuleGeometry(0.14, 0.75, 6, 12), [0.62, 1.6, 0.1], -0.9],
+    [new THREE.CapsuleGeometry(0.17, 0.75, 6, 12), [-0.22, 0.5, 0]],
+    [new THREE.CapsuleGeometry(0.17, 0.75, 6, 12), [0.22, 0.5, 0]],
+  ];
+  for (const [geo, at, rz = 0] of parts) { const o = solid(geo, 1400); o.position.set(...at); o.rotation.z = rz; wren.add(o); }
+  scene.add(wren);
+  const floor = theme.style === 'chrome'
+    ? new THREE.Mesh(new THREE.CircleGeometry(6, 64), new THREE.MeshStandardMaterial({ color: 0x111113, metalness: 0.9, roughness: 0.35 }))
+    : theme.style === 'wire' ? new THREE.PolarGridHelper(6, 16, 8, 64, ink, ink) : solid(new THREE.CircleGeometry(6, 64), 5000);
+  if (floor.material) { floor.material.transparent = true; floor.material.opacity = theme.style === 'wire' ? 0.3 : floor.material.opacity; }
+  if (!(floor instanceof THREE.PolarGridHelper)) floor.rotation.x = -Math.PI / 2;
+  scene.add(floor);
+
+  // Station 2: photos drifting in space.
+  const photos = PHOTOS.map((ph, i) => {
+    const map = photoTexture(theme, ph.label, i);
+    const mat = theme.style === 'wire' ? ditherMat(map) : new THREE.MeshBasicMaterial({ map, transparent: true });
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(ph.w, ph.h), mat);
+    const side = i % 2 ? 1 : -1;
+    m.position.set(side * (2.3 + (i % 3) * 0.7), 1.4 + ((i * 37) % 5) * 0.4, -22 - i * 4.6);
+    m.rotation.y = -side * 0.35; m.rotation.z = side * 0.03;
+    if (theme.style === 'chrome') {
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(ph.w + 0.12, ph.h + 0.12, 0.08), chromeMat);
+      slab.position.z = -0.06; m.add(slab);
+    } else if (theme.style === 'points') {
+      const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(ph.w + 0.1, ph.h + 0.1)), new THREE.LineBasicMaterial({ color: ink, transparent: true, opacity: 0.4 }));
+      m.add(edge);
+    }
+    m.userData = { ...ph, base: m.position.clone(), phase: i * 1.7 };
+    scene.add(m);
+    return m;
+  });
+
+  // Station 3: records.
+  const recMap = recordTexture(theme);
+  const records = [-5.6, -2.8, 0, 2.8, 5.6].map((x, i) => {
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(1.25, 96), new THREE.MeshStandardMaterial({ map: recMap, metalness: 0.3, roughness: 0.35, side: THREE.DoubleSide }));
+    const holder = new THREE.Group(); holder.position.set(x, 2 + (i % 2 ? 0.35 : -0.25), -80); holder.rotation.x = -0.12; holder.add(disc);
+    if (theme.style === 'wire') { disc.material = new THREE.MeshBasicMaterial({ map: recMap, side: THREE.DoubleSide }); }
+    scene.add(holder); return disc;
+  });
+
+  // Station 4: dot map with routes from Danville.
+  const map = new THREE.Group(); map.position.set(0, 1.2, -98); scene.add(map);
+  {
+    const pts = [];
+    for (let lon = -180; lon <= 180; lon += 3) for (let lat = -60; lat <= 80; lat += 3) if (isLand(lon, lat)) { const [x, y] = mapXY(lon, lat); pts.push(x, y, 0); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+    map.add(new THREE.Points(g, new THREE.PointsMaterial({ color: ink, size: 0.06, transparent: true, opacity: 0.5 })));
+  }
+  const [hx, hy] = mapXY(...HOME);
+  const routes = PLACES.map(([, lon, lat]) => {
+    const [x, y] = mapXY(lon, lat);
+    const mid = new THREE.Vector3((hx + x) / 2, (hy + y) / 2 + 1.2, 1.4);
+    const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(hx, hy, 0), mid, new THREE.Vector3(x, y, 0));
+    const g = new THREE.BufferGeometry().setFromPoints(curve.getPoints(80));
+    const line = new THREE.Line(g, new THREE.LineBasicMaterial({ color: accent }));
+    g.setDrawRange(0, 0); map.add(line);
+    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 12), new THREE.MeshBasicMaterial({ color: accent }));
+    pin.position.set(x, y, 0); pin.scale.setScalar(0.001); map.add(pin);
+    return { g, pin };
+  });
+  const home = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 12), new THREE.MeshBasicMaterial({ color: ink }));
+  home.position.set(hx, hy, 0); map.add(home);
+
+  // Station 5: Tooey prep sheet.
+  const prepMap = prepTexture(theme);
+  const prep = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 3.2), theme.style === 'wire' ? ditherMat(prepMap) : new THREE.MeshBasicMaterial({ map: prepMap }));
+  if (theme.style === 'wire') prep.material.uniforms.focus.value = 1;
+  prep.position.set(0.9, 2, -122); prep.rotation.set(-0.08, -0.2, -0.05); scene.add(prep);
+
+  // Station 6: builds in an arc.
+  const screens = BUILDS.map((name, i) => {
+    const a = (-0.62 + (i / (BUILDS.length - 1)) * 1.24);
+    const map = screenTexture(theme, name, i);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.62), theme.style === 'wire' ? ditherMat(map) : new THREE.MeshBasicMaterial({ map }));
+    if (theme.style === 'wire') m.material.uniforms.focus.value = 1;
+    m.position.set(Math.sin(a) * 9, 2 + (i % 2 ? 0.9 : -0.9), -135 - Math.cos(a) * 9);
+    m.lookAt(0, m.position.y, -135);
+    if (theme.style === 'chrome') { const s = new THREE.Mesh(new THREE.BoxGeometry(2.74, 1.76, 0.08), chromeMat); s.position.z = -0.06; m.add(s); }
+    scene.add(m); return m;
+  });
+
+  // Overlay copy fades by scroll range.
+  const overlays = [...document.querySelectorAll('[data-in]')].map((el) => ({ el, a: +el.dataset.in, b: +el.dataset.out }));
+  const caption = document.getElementById('caption');
+
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false); camera.aspect = w / h;
+    camera.fov = w < 700 ? 60 : 45; camera.updateProjectionMatrix();
+  }
+  addEventListener('resize', resize); resize();
+
+  const maxScroll = () => document.documentElement.scrollHeight - innerHeight;
+  const forced = new URLSearchParams(location.search).get('p');
+  let cur = forced !== null ? +forced : 0;
+  const clock = new THREE.Clock();
+
+  function frame() {
+    const t = clock.getElapsedTime();
+    const target = forced !== null ? +forced : scrollY / Math.max(1, maxScroll());
+    cur += (target - cur) * (forced !== null ? 1 : 0.075);
+    const p = cur;
+
+    const { pos, look } = cameraAt(p);
+    camera.position.copy(pos); camera.lookAt(look);
+    
+
+    wren.rotation.y = Math.sin(t * 0.4) * 0.25; wren.position.y = Math.sin(t * 1.3) * 0.04;
+    wren.children[3].rotation.z = -0.9 + Math.sin(t * 2.2) * 0.35;
+
+    let nearest = null, nd = Infinity;
+    for (const m of photos) {
+      const u = m.userData;
+      m.position.y = u.base.y + Math.sin(t * 0.6 + u.phase) * 0.12;
+      const d = camera.position.distanceTo(m.position);
+      const ahead = m.position.z < camera.position.z;
+      if (ahead && d < nd) { nd = d; nearest = m; }
+      const focus = smooth(clamp01((14 - d) / 8));
+      if (m.material.uniforms) m.material.uniforms.focus.value = focus;
+      else m.material.opacity = 0.25 + 0.75 * focus;
+    }
+    const inPhotos = p > 0.13 && p < 0.44;
+    caption.textContent = inPhotos && nearest && nd < 11 ? nearest.userData.caption : '';
+    caption.style.opacity = caption.textContent ? 1 : 0;
+
+    records.forEach((r, i) => { r.rotation.z = -t * (1.2 + i * 0.1); r.parent.rotation.y = Math.sin(t * 0.5 + i) * 0.25; });
+
+    const mp = smooth(clamp01((p - 0.53) / 0.08));
+    routes.forEach(({ g, pin }, i) => {
+      const k = clamp01(mp * 1.6 - i * 0.09);
+      g.setDrawRange(0, Math.floor(k * 81));
+      pin.scale.setScalar(k > 0.98 ? 1 + Math.sin(t * 3 + i) * 0.15 : 0.001);
+    });
+
+    prep.position.y = 2 + Math.sin(t * 0.8) * 0.08;
+    screens.forEach((s, i) => { s.position.y += Math.sin(t * 0.7 + i) * 0.0015; });
+
+    for (const { el, a, b } of overlays) {
+      const o = Math.min(smooth(clamp01((p - a) / 0.025)), smooth(clamp01((b - p) / 0.025)));
+      el.style.opacity = o; el.style.transform = `translateY(${(1 - o) * 10}px)`;
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  frame();
+  document.body.classList.add('ready');
+}
+
+if (window.THREE) { start({"title":"Drift","style":"points","bg":"#04060A","ink":"#DCE6F2","accent":"#8FD3FF","displayFont":"'Michroma', sans-serif","bodyFont":"'Hanken Grotesk', sans-serif","photoTones":["#1B2430","#232B36","#1A2029","#26303C"],"screenBg":"#0E141C","fogNear":10,"fogFar":46,"dust":2600,"inkCss":"#DCE6F2","accentCss":"#8FD3FF"}).catch((e) => { const f = document.getElementById('fail'); f.hidden = false; f.textContent = 'The 3D scene could not start: ' + e.message; }); }
+else { const f = document.getElementById('fail'); f.hidden = false; f.textContent = 'The 3D library did not load.'; }
+</script>
