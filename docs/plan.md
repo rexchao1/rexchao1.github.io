@@ -43,3 +43,12 @@ copy approved by Rex, working on phones, and the Animus opening loading fast.
 - Which Tooey facts are OK to publish, and Tooey's current status.
 - Where in Europe besides Spain.
 - "What I learned" lines on builds are drafts for Rex to confirm.
+
+## Prototype v2 (2026-10-09), from Rex's feedback
+- Much shorter scroll. Name is a particle sign behind Wren; the camera flies through it and it scatters ("going inside me").
+- About is a compact ring around the camera: photos, a small travel map, small spinning records, the pets. No separate Danville stop.
+- Builds sit in a horizontal row the camera slides along; hover grows one and shows a short blurb (touch shows the one in the middle).
+- Team line shows the Photon Commerce and StudioApp.ai logos; contact has LinkedIn, GitHub and resume icons.
+- Wren stays the stand-in for now (Rex: "keep wren for now").
+- Open: Minnie letter screens show "Renu Prosthodontics", probably the real client. Not used on the site until Rex decides.
+- Open: two Animus app shots have a relabeled provider bar and made-up token counts. Crop or recapture before use.
