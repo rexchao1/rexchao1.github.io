@@ -112,7 +112,7 @@ my name ends up smaller and fixed on the screen".
 
 ### v4 steps
 1. Prototype the name zoom (solid and particles) with a rough text page, publish for Rex. DONE (https://claude.ai/artifact/EN99o68RXcSfvtP3YK4xue, `src/Page.tsx`, `src/intro/Name.tsx`; name font made from Bricolage Grotesque 800 with opentype.js, only the letters in "Rex Chao")
-2. Rex picks a look; remove the other one and the retired world code. WAITING ON REX
+2. Rex picks a look; remove the other one and the retired world code. DONE (particles; drei and postprocessing removed)
 3. Copy pass on the text page with Rex; real photos if About gets any. TODO
 4. Phone and performance pass. TODO
 5. Merge to main and go live. TODO (ask Rex first)
@@ -138,3 +138,9 @@ Rex: work panels with "more white space in between" and "smaller", hover "expand
   a drawn diagram (plan, queue, agents, critic, console) since there is no screenshot; the line comes from his resume.
   Seven tiles: four on top, three centered below. Internships are now two bigger cards under a "Can I work on a team?
   Ask them." heading; roles say only "Intern" until Rex says what he did.
+
+### v4 round 4 (2026-10-09)
+- Rex picked the particle name. The solid look, the prototype switch and the old world code are gone.
+- Work tiles are covers (project color, dot texture, a small kind label, the name; Tooey's "Building now" badge sits on
+  its cover). Hover grows a tile to about 1.65x and swaps the cover for the real screenshot with its line. Edge tiles
+  grow inward. Phones: tap opens a tile full width with the screenshot.

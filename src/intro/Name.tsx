@@ -1,24 +1,22 @@
 /**
  * "Rex Chao" in 3D. It fills the screen on load; scrolling the first screen zooms it out until it sits small in the
- * header's left slot, where it stays. Two looks to compare: solid letters, or particles that assemble on load.
+ * header's left slot, where it stays. It is drawn as fine particles that drift in and assemble on load.
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, Lightformer } from '@react-three/drei';
 import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 import fontData from './name-font.json';
 
-export type Look = 'solid' | 'particles';
-
 const FONT = new FontLoader().parse(fontData as never);
 
 /** The name geometry, centered, 1 unit tall per cap. */
 function useNameGeometry() {
   return useMemo(() => {
-    const g = new TextGeometry('Rex Chao', { font: FONT, size: 1, depth: 0.24, curveSegments: 10, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.018, bevelSegments: 4 });
+    // Shallow, so nearly every sampled point sits on the face and the small docked name stays readable.
+    const g = new TextGeometry('Rex Chao', { font: FONT, size: 1, depth: 0.06, curveSegments: 10, bevelEnabled: false });
     g.computeBoundingBox();
     const b = g.boundingBox!;
     g.translate(-(b.min.x + b.max.x) / 2, -(b.min.y + b.max.y) / 2, -(b.min.z + b.max.z) / 2);
@@ -89,23 +87,7 @@ function useTone(from: string, to: string) {
   }, [from, to]);
 }
 
-function Solid({ from, to }: { from: string; to: string }) {
-  const geo = useNameGeometry();
-  const size = useMemo(() => geo.boundingBox!.getSize(new THREE.Vector3()), [geo]);
-  const { ref, progress: prog } = useDock(size);
-  const tone = useTone(from, to);
-  const mat = useRef<THREE.MeshPhysicalMaterial>(null);
-  useFrame(() => void mat.current?.color.copy(tone(prog())));
-  return (
-    <group ref={ref}>
-      <mesh geometry={geo}>
-        <meshPhysicalMaterial ref={mat} roughness={0.35} metalness={0} clearcoat={0.6} clearcoatRoughness={0.25} envMapIntensity={1.2} />
-      </mesh>
-    </group>
-  );
-}
-
-const COUNT = 14000;
+const COUNT = 18000;
 
 function Particles({ from, to }: { from: string; to: string }) {
   const geo = useNameGeometry();
@@ -172,7 +154,7 @@ function Particles({ from, to }: { from: string; to: string }) {
     mat.uniforms.uDpr.value = gl.getPixelRatio();
     mat.uniforms.uColor.value.copy(tone(prog()));
     // Points stay a readable size: generous while big, fine once docked.
-    mat.uniforms.uSize.value = THREE.MathUtils.lerp(Math.max(2.2, px.width / 520), 1.25, prog());
+    mat.uniforms.uSize.value = THREE.MathUtils.lerp(Math.max(2.2, px.width / 560), 1.5, prog());
   });
   return (
     <group ref={ref}>
@@ -181,19 +163,10 @@ function Particles({ from, to }: { from: string; to: string }) {
   );
 }
 
-export function Name({ look, from, to }: { look: Look; from: string; to: string }) {
+export function Name({ from, to }: { from: string; to: string }) {
   return (
     <Canvas className="name3d" style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 60 }} dpr={[1, 2]} camera={{ fov: 30, position: [0, 0, 12] }} gl={{ alpha: true, antialias: true }} aria-hidden>
-      <hemisphereLight args={['#ffffff', '#b8c4e8', 1.4]} />
-      <directionalLight position={[3, 5, 6]} intensity={1.2} />
-      <directionalLight position={[-4, -3, 5]} intensity={0.9} color="#ffb070" />
-      <Environment resolution={256}>
-        <Lightformer form="rect" intensity={2.4} position={[0, 4, 4]} scale={[10, 2, 1]} />
-        <Lightformer form="rect" intensity={1.2} position={[-6, 0, 2]} rotation-y={Math.PI / 2} scale={[6, 4, 1]} />
-        <Lightformer form="rect" intensity={1.2} position={[6, -2, 2]} rotation-y={-Math.PI / 2} scale={[6, 4, 1]} />
-        <Lightformer form="rect" intensity={1} position={[0, -5, 3]} rotation-x={-Math.PI / 2} scale={[10, 4, 1]} />
-      </Environment>
-      {look === 'solid' ? <Solid from={from} to={to} /> : <Particles from={from} to={to} />}
+      <Particles from={from} to={to} />
     </Canvas>
   );
 }

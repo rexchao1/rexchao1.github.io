@@ -4,7 +4,7 @@
  * The header nav scrolls to each section and marks the one you're in. Normal scrolling throughout.
  */
 import { useEffect, useState, type ReactNode } from 'react';
-import { Name, type Look } from './intro/Name';
+import { Name } from './intro/Name';
 import { Dusk } from './intro/Dusk';
 import { EMAIL, PROJECTS } from './content';
 import photonLogo from './assets/photon.png';
@@ -16,8 +16,16 @@ const NAV = [
   { id: 'contact', label: 'Contact' },
 ];
 
-/** Tooey first; it carries a "Building now" badge. */
-const WORK = ['tooey', 'factory', 'frontdesk', 'fetch', 'bruindesk', 'animus', 'catcart'];
+/** Tooey first; it carries a "Building now" badge. `kind` is the small label on each cover. */
+const WORK: { id: string; kind: string }[] = [
+  { id: 'tooey', kind: 'Restaurant forecasting' },
+  { id: 'factory', kind: 'Agent workflow' },
+  { id: 'frontdesk', kind: 'Dental office AI' },
+  { id: 'fetch', kind: 'Mac app' },
+  { id: 'bruindesk', kind: 'UCLA dashboard' },
+  { id: 'animus', kind: '3D AI character' },
+  { id: 'catcart', kind: 'iOS game' },
+];
 
 /** Each fact gets a small drawn badge until real photos arrive. */
 const FACTS: { k: string; v: string; tint: string; art: ReactNode }[] = [
@@ -214,7 +222,7 @@ function Gallery() {
   const [open, setOpen] = useState<string | null>(null);
   return (
     <ul className="gallery">
-      {WORK.map((id) => {
+      {WORK.map(({ id, kind }) => {
         const p = PROJECTS[id];
         return (
           <li key={id}>
@@ -224,12 +232,19 @@ function Gallery() {
               data-tall={p.tall || undefined}
               data-open={open === id || undefined}
               aria-expanded={open === id}
+              aria-label={`${p.title}: ${p.line}`}
               style={{ '--tint': p.tint } as React.CSSProperties}
               onClick={() => setOpen(open === id ? null : id)}
             >
-              {p.img ? <img src={p.img} alt="" /> : id === 'factory' ? <FactoryArt /> : <span className="ph">Screenshot soon</span>}
-              {id === 'tooey' && <span className="badge">Building now</span>}
-              <span className="cap">
+              {p.img ? <img src={p.img} alt="" /> : <FactoryArt />}
+              <span className="cover" aria-hidden="true">
+                <span className="kind">{kind}</span>
+                <span className="foot">
+                  {id === 'tooey' && <span className="badge">Building now</span>}
+                  <span className="name">{p.title}</span>
+                </span>
+              </span>
+              <span className="cap" aria-hidden="true">
                 <span className="t">{p.title}</span>
                 <span className="l">{p.line}</span>
               </span>
@@ -276,7 +291,6 @@ function Contact() {
 }
 
 export function Page() {
-  const [look, setLook] = useState<Look>(() => (location.hash === '#particles' ? 'particles' : 'solid'));
   const ink = useInk();
   const active = useActive();
   useReveal();
@@ -298,7 +312,7 @@ export function Page() {
         </div>
       </header>
 
-      <Name look={look} from="#f6efe4" to={ink} />
+      <Name from="#f6efe4" to={ink} />
 
       <section className="hero" id="top" aria-label="Rex Chao">
         <Dusk />
@@ -365,14 +379,6 @@ export function Page() {
         <footer className="col">© 2026 Rex Chao</footer>
       </main>
 
-      <div className="looks" role="group" aria-label="Prototype: name look">
-        <span>Name</span>
-        {(['solid', 'particles'] as Look[]).map((l) => (
-          <button key={l} type="button" aria-pressed={look === l} onClick={() => setLook(l)}>
-            {l === 'solid' ? 'Solid' : 'Particles'}
-          </button>
-        ))}
-      </div>
     </>
   );
 }
