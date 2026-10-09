@@ -268,10 +268,10 @@ function Contact() {
         {ICON.github}
         GitHub
       </a>
-      <span className="big off" aria-disabled="true">
+      <a className="big" href={`${import.meta.env.BASE_URL}Rex_Chao.pdf`} target="_blank" rel="noreferrer">
         {ICON.resume}
-        Resume <small>soon</small>
-      </span>
+        Resume
+      </a>
       <button
         type="button"
         className="big mail"

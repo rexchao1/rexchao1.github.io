@@ -33,7 +33,7 @@ copy approved by Rex, working on phones, and the Animus opening loading fast.
 1. Brainstorm content and order. DONE
 2. Capture project screenshots (Animus, Bruin Desk, Tooey, front desk, Fetch, CatCart, Laoshu). IN PROGRESS
 3. Design direction: A (Drift) chosen and locked in design/DESIGN.md. Live prototype: https://claude.ai/artifact/KuuJJr1kUXEKyqP5rohBGp (built by design/drift/build.mjs). DONE
-4. Rex sends photos, top artists, resume PDF, rest of Europe list. WAITING ON REX
+4. Rex sends photos, top artists, rest of Europe list. WAITING ON REX (resume PDF in: `public/Rex_Chao.pdf`, opens in a new tab; replace the file to update it)
 5. Approve copy and look. TODO
 6. Pick the stack and build the site, including the Animus scene port and scroll camera. TODO
 7. Phone and performance pass. TODO
@@ -93,7 +93,7 @@ Rex: "keep all the text big like before like the title and github and stuff and 
 contact links and cards stay large; do not shrink them for polish.
 
 ### Still open
-- Real photos for the cards (sports, food, travel, friends, pets), top artists, resume PDF, Europe beyond Spain.
+- Real photos for the cards (sports, food, travel, friends, pets), top artists, Europe beyond Spain.
 - Rex's hair and skin colors for the character (`LOOK` in src/home/Avatar.tsx are placeholders).
 - What Rex did at Photon Commerce and StudioApp.ai, if he wants more than "Team player? Ask them."
 - PoseAR art; the chairlift on the mountain faces away from the camera.
