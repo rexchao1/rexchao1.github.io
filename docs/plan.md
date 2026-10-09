@@ -18,7 +18,7 @@ Recruiters. They leave with Rex's LinkedIn, email, resume and GitHub, and rememb
 - No "what I'm looking for" line. Resume and GitHub links yes.
 - About: Danville to LA; sports photo strip (baseball with volunteer umpiring as community
   service, skiing at Tahoe, pickleball for fun); LA eats photo wall; animated travel map from
-  Danville (Peru, Japan, China, Spain, other Europe, Mexico, Alaska); top artists on spinning
+  Danville (Peru, Japan, China, Spain, other Europe, Mexico; Alaska left off the site on request); top artists on spinning
   records; pets Rusty (dog), Petey and Jasper (cats). No powerlifting, no baseball card, no globe.
 - Builds hover shelf: dental front desk, Fetch, Bruin Desk, PoseAR (placeholder art), CatCart, Laoshu.
 - Animus on the site: the real React Three Fiber scene with a custom look and a scripted

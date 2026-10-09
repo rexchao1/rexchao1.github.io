@@ -31,7 +31,7 @@ const WORK: { id: string; kind: string }[] = [
 const FACTS: { k: string; v: string; tint: string; art: ReactNode }[] = [
   {
     k: 'Baseball',
-    v: 'I volunteer as an umpire for Tri-Valley youth baseball.',
+    v: 'Played my whole life, through varsity. Now I umpire Little League.',
     tint: '#d6453a',
     art: (
       <>
@@ -43,7 +43,7 @@ const FACTS: { k: string; v: string; tint: string; art: ReactNode }[] = [
   },
   {
     k: 'Skiing',
-    v: "Tahoe every winter. I'm pretty good.",
+    v: 'Tahoe every winter.',
     tint: '#3a78d6',
     art: (
       <>
@@ -79,14 +79,14 @@ const FACTS: { k: string; v: string; tint: string; art: ReactNode }[] = [
   },
   {
     k: 'Travel',
-    v: 'Peru, Japan, China, Spain, Mexico, Alaska.',
+    v: 'Peru, Japan, China, Spain, Mexico.',
     tint: '#1f9aa3',
     art: (
       <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
     ),
   },
   {
-    k: 'Pets',
+    k: 'Playing with my pets',
     v: 'Rusty the dog, Petey and Jasper the cats.',
     tint: '#c98a2b',
     art: (
