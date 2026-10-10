@@ -86,7 +86,7 @@ Rex: "Don't use animus. Maybe just make your own 3d model. i want it customized 
 3. Projects scene in space with hover cards. DONE
 4. Connect scene. DONE
 5. Scroll transitions between the three, with snapping. DONE (wheel, swipe, keys, dots; phones get their own framing)
-6. Single-file build, strict-policy test, publish. DONE (`npm run build && node scripts/artifact.mjs`)
+6. Single-file build, strict-policy test, publish. DONE (now `npm run build:artifact`)
 
 ### Text size
 Rex: "keep all the text big like before like the title and github and stuff and projects." Name, project names,
@@ -115,7 +115,7 @@ my name ends up smaller and fixed on the screen".
 2. Rex picks a look; remove the other one and the retired world code. DONE (particles; drei and postprocessing removed)
 3. Copy pass on the text page with Rex; real photos if About gets any. TODO
 4. Phone and performance pass. TODO
-5. Merge to main and go live. TODO (ask Rex first)
+5. Merge to main and go live. DONE 2026-10-09 (Rex: "go ahead and deploy it")
 
 ### v4 round 2 (2026-10-09), from Rex's feedback
 Rex: "better looking", builds as "a gallery where you can hover and it will expand", "less scrolling", LinkedIn,
@@ -144,3 +144,10 @@ Rex: work panels with "more white space in between" and "smaller", hover "expand
 - Work tiles are covers (project color, dot texture, a small kind label, the name; Tooey's "Building now" badge sits on
   its cover). Hover grows a tile to about 1.65x and swaps the cover for the real screenshot with its line. Edge tiles
   grow inward. Phones: tap opens a tile full width with the screenshot.
+
+### Deploy (2026-10-09)
+- `main` deploys through `.github/workflows/deploy.yml` (GitHub Pages, build type "workflow"): `npm ci`, `npm run build`,
+  upload `./dist`. `npm run build` is the normal multi-file site; `npm run build:artifact` makes the single-file
+  preview (`dist/artifact.html`). `npm run check` type-checks and builds.
+- The old Next.js site's history was merged in with `-s ours`, so `main` moved forward without a force push.
+- The live resume PDF (`public/Rex_Chao.pdf`) includes Rex's phone number; he chose to ship it as is.

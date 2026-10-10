@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "build:artifact": "vite build --mode artifact && node scripts/artifact.mjs",
+    "check": "tsc --noEmit -p . && vite build"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.1",
