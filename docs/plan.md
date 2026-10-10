@@ -150,4 +150,8 @@ Rex: work panels with "more white space in between" and "smaller", hover "expand
   upload `./dist`. `npm run build` is the normal multi-file site; `npm run build:artifact` makes the single-file
   preview (`dist/artifact.html`). `npm run check` type-checks and builds.
 - The old Next.js site's history was merged in with `-s ours`, so `main` moved forward without a force push.
+- rexchao.com (and www) is served by Vercel, not GitHub Pages: project `rexchao-portfolio` on the `rexchao1-1660` Vercel
+  account, Git-linked to this repo's `main`. Its framework preset must be Vite with output `dist`; when it was still
+  Next.js the first redesign deploy failed and the old site stayed up (fixed 2026-10-09). GitHub Pages still builds
+  rexchao1.github.io from the same push.
 - The live resume PDF (`public/Rex_Chao.pdf`) includes Rex's phone number; he chose to ship it as is.
