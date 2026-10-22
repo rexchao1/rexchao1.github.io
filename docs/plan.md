@@ -155,3 +155,12 @@ Rex: work panels with "more white space in between" and "smaller", hover "expand
   Next.js the first redesign deploy failed and the old site stayed up (fixed 2026-10-09). GitHub Pages still builds
   rexchao1.github.io from the same push.
 - The live resume PDF (`public/Rex_Chao.pdf`) includes Rex's phone number; he chose to ship it as is.
+
+
+## Light checks (2026-10-22)
+
+Goal: new sessions keep checks small and still check changed behavior. Instructions only; preserve site code and deployment settings. Done when AGENTS.md has the shared policy and real commands, the diff is reviewed, and the commit is saved to the private Portfolio website history.
+
+- [x] Read the site instructions, plan and package commands.
+- [x] Add the policy and review the diff.
+- [x] Commit and save to the private Portfolio website history.
