@@ -164,3 +164,18 @@ Goal: new sessions keep checks small and still check changed behavior. Instructi
 - [x] Read the site instructions, plan and package commands.
 - [x] Add the policy and review the diff.
 - [x] Commit and save to the private Portfolio website history.
+
+## Work section v5 (2026-10-31): project popups with guided demos
+
+Rex: "especially the projects tab better. clicks open a big pop up that gives details about the project with a demo
+and link to github or website", and "make the demos / previews way better".
+- Cards show the real screen in a browser, phone or bare frame over the project's color. Tooey is a full-width
+  featured card. Hovering a card plays a short guided demo: the screen zooms toward each feature with a caption.
+- Clicking opens a popup (`src/Work.tsx`, native `<dialog>`): the full demo with play/pause and a step bar, the story,
+  links, a "Built with" list. Arrow keys move between projects; Esc or the backdrop closes. Phones get a full-screen sheet.
+- All project data, demo notes (x/y as fractions of the image) and links live in `src/content.ts`.
+- Links only to public things: Tooey website, factory repo (not-so-simple-software-factory), Fetch repo and DMG, CatCart
+  repo. Front desk, Bruin Desk and Animus say why the code is private.
+- New screens: Factory work board and planning (from its public README), Fetch guide (from its README), the live Tooey
+  website. Existing shots are only 760px wide, so they soften when zoomed; sharper captures would help.
+- Open: popup copy is a draft for Rex to confirm, especially Tooey's problem line, Animus and CatCart.
