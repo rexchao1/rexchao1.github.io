@@ -221,9 +221,6 @@ export function Page() {
         <Dusk light={!dark} />
         <h1 className="sr">Rex Chao</h1>
         <p className="tag">Computer science at UCLA.</p>
-        <p className="hint" aria-hidden>
-          Scroll
-        </p>
       </section>
 
 
