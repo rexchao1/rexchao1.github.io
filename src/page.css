@@ -2,14 +2,14 @@
 :root{
   --bg:#f4f5f6;--fg:#14161f;--dim:#5c6170;--line:#e0e2e7;--chip:#e9ebef;--card:#ffffff;
   --name:#171a26;--accent:#d9582a;
-  --sky:#070914;--sky2:#101634;--sun:#ff8a3d;--dusk:#c2477a;--pearl:#f6efe4;
+  --hero:radial-gradient(70% 60% at 50% 115%,#e8f6ff,transparent 70%),linear-gradient(180deg,#bfe6ff,#8fd0ff);--hero-fg:#16131c;
   --display:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif;
   --body:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
   --col:640px;--wide:1080px;--gut:20px;--bar:64px;
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0f15;--fg:#ecedf2;--dim:#9a9fae;--line:#232733;--chip:#191c25;--card:#151821;--name:#f2ece2;--accent:#ff8a52;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0d0f15;--fg:#ecedf2;--dim:#9a9fae;--line:#232733;--chip:#191c25;--card:#151821;--name:#f2ece2;--accent:#ff8a52;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0f15;--fg:#ecedf2;--dim:#9a9fae;--line:#232733;--chip:#191c25;--card:#151821;--name:#f2ece2;--accent:#ff8a52;--hero:radial-gradient(70% 55% at 50% 115%,rgba(143,208,255,.16),transparent 70%),linear-gradient(180deg,#05070d,#0b1220);--hero-fg:#f6efe4;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d0f15;--fg:#ecedf2;--dim:#9a9fae;--line:#232733;--chip:#191c25;--card:#151821;--name:#f2ece2;--accent:#ff8a52;--hero:radial-gradient(70% 55% at 50% 115%,rgba(143,208,255,.16),transparent 70%),linear-gradient(180deg,#05070d,#0b1220);--hero-fg:#f6efe4;color-scheme:dark}
 
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--bar) + 24px)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
@@ -30,13 +30,12 @@ nav a[aria-current]{color:var(--fg);border-color:var(--accent)}
 @media (max-width:600px){.slot{width:116px}nav{font-size:14px}}
 @media (prefers-reduced-motion:reduce){nav,.bar::before{opacity:1}}
 
-/* Opening: LA at dusk. The name itself is drawn by the 3D canvas above everything. */
-.hero{height:100svh;position:relative;overflow:hidden;border-radius:0 0 28px 28px;color:var(--pearl);
-  background:radial-gradient(90% 55% at 50% 118%,color-mix(in srgb,var(--sun) 70%,transparent),color-mix(in srgb,var(--dusk) 35%,transparent) 45%,transparent 75%),linear-gradient(180deg,var(--sky) 0%,var(--sky2) 100%)}
+/* Opening: a sky blue day, or night in dark mode. The name itself is drawn by the 3D canvas above everything. */
+.hero{height:100svh;position:relative;overflow:hidden;border-radius:0 0 28px 28px;color:var(--hero-fg);background:var(--hero)}
 .dusk{position:absolute;inset:0;width:100%;height:100%}
 .tag,.hint{position:absolute;left:0;right:0;text-align:center;margin:0;padding-inline:var(--gut);opacity:calc(1 - var(--intro,0) * 3)}
-.tag{top:64%;font-size:clamp(18px,2.2vw,22px);color:color-mix(in srgb,var(--pearl) 78%,transparent)}
-.hint{bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:color-mix(in srgb,var(--pearl) 70%,transparent)}
+.tag{top:64%;font-size:clamp(18px,2.2vw,22px);color:color-mix(in srgb,var(--hero-fg) 78%,transparent)}
+.hint{bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:color-mix(in srgb,var(--hero-fg) 70%,transparent)}
 .hint::after{content:"";display:block;width:1px;height:28px;margin:10px auto 0;background:currentColor;animation:drip 1.8s ease-in-out infinite}
 @keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 @media (prefers-reduced-motion:reduce){.hero{display:none}}

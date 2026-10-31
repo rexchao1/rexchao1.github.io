@@ -1,6 +1,6 @@
 /**
  * "Rex Chao" in 3D. It fills the screen on load; scrolling the first screen zooms it out until it sits small in the
- * header's left slot, where it stays. It is drawn as fine particles that drift in and assemble on load.
+ * header's left slot, where it stays. It is drawn as outlined beads that drift in and assemble on load.
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
@@ -79,17 +79,13 @@ function useDock(size: THREE.Vector3) {
   return { ref, progress: () => easeInOut(progress()) };
 }
 
-/** Pearl over the dark opening, the theme's ink once docked. */
-function useTone(from: string, to: string) {
-  return useMemo(() => {
-    const a = new THREE.Color(from), b = new THREE.Color(to), c = new THREE.Color();
-    return (e: number) => c.copy(a).lerp(b, THREE.MathUtils.smoothstep(e, 0.45, 0.95));
-  }, [from, to]);
-}
+/** Beads are few and large so each one's outline reads. */
+const COUNT = 2400;
 
-const COUNT = 18000;
+/** Each bead's face and ring color while the name is big. */
+export type Beads = { face: string; ring: string };
 
-function Particles({ from, to }: { from: string; to: string }) {
+function Particles({ beads, ink }: { beads: Beads; ink: string }) {
   const geo = useNameGeometry();
   const size = useMemo(() => geo.boundingBox!.getSize(new THREE.Vector3()), [geo]);
   const { ref, progress: prog } = useDock(size);
@@ -115,36 +111,44 @@ function Particles({ from, to }: { from: string; to: string }) {
     g.setAttribute('seed', new THREE.BufferAttribute(seed, 1));
     return g;
   }, [geo]);
+  // Opaque beads, a face inside a ring, depth-tested so nearer beads cover farther ones. As the name docks they
+  // fill in solid ink so the small header name stays readable.
   const mat = useMemo(
     () =>
       new THREE.ShaderMaterial({
-        transparent: true,
-        depthWrite: false,
-        uniforms: { uForm: { value: 0 }, uTime: { value: 0 }, uSize: { value: 3 }, uColor: { value: new THREE.Color(from) }, uDpr: { value: 1 } },
+        uniforms: {
+          uForm: { value: 0 }, uTime: { value: 0 }, uSize: { value: 8 }, uSolid: { value: 0 }, uDpr: { value: 1 },
+          uFace: { value: new THREE.Color() }, uRing: { value: new THREE.Color() }, uInk: { value: new THREE.Color() },
+        },
         vertexShader: /* glsl */ `
           attribute vec3 scatter; attribute float seed;
           uniform float uForm, uTime, uSize, uDpr;
-          varying float vSeed;
           void main() {
             float t = smoothstep(seed * 0.5, seed * 0.5 + 0.5, uForm);
             vec3 p = mix(scatter, position, t);
             p += (1.0 - t * 0.85) * 0.03 * vec3(sin(uTime * 1.3 + seed * 40.0), cos(uTime * 1.1 + seed * 30.0), 0.0);
+            p.z += seed * 0.04;
             vec4 mv = modelViewMatrix * vec4(p, 1.0);
             gl_Position = projectionMatrix * mv;
-            gl_PointSize = uSize * uDpr * (0.7 + seed * 0.6);
-            vSeed = seed;
+            gl_PointSize = uSize * uDpr * (0.65 + seed * 0.7);
           }`,
         fragmentShader: /* glsl */ `
-          uniform vec3 uColor; varying float vSeed;
+          uniform vec3 uFace, uRing, uInk; uniform float uSolid;
           void main() {
             float d = length(gl_PointCoord - 0.5);
             if (d > 0.5) discard;
-            gl_FragColor = vec4(uColor * (0.85 + vSeed * 0.3), smoothstep(0.5, 0.2, d));
+            float ring = smoothstep(0.34, 0.39, d);
+            gl_FragColor = vec4(mix(mix(uFace, uRing, ring), uInk, uSolid), 1.0);
+            #include <colorspace_fragment>
           }`,
       }),
     [],
   );
-  const tone = useTone(from, to);
+  useEffect(() => {
+    mat.uniforms.uFace.value.set(beads.face);
+    mat.uniforms.uRing.value.set(beads.ring);
+    mat.uniforms.uInk.value.set(ink);
+  }, [mat, beads.face, beads.ring, ink]);
   const born = useRef(performance.now());
   useFrame(({ clock, gl }) => {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -152,9 +156,8 @@ function Particles({ from, to }: { from: string; to: string }) {
     mat.uniforms.uForm.value = reduced ? 1 : Math.min(1, age);
     mat.uniforms.uTime.value = clock.elapsedTime;
     mat.uniforms.uDpr.value = gl.getPixelRatio();
-    mat.uniforms.uColor.value.copy(tone(prog()));
-    // Points stay a readable size: generous while big, fine once docked.
-    mat.uniforms.uSize.value = THREE.MathUtils.lerp(Math.max(2.2, px.width / 560), 1.5, prog());
+    mat.uniforms.uSolid.value = THREE.MathUtils.smoothstep(prog(), 0.35, 0.85);
+    mat.uniforms.uSize.value = THREE.MathUtils.lerp(Math.max(7, px.width / 150), 2.8, prog());
   });
   return (
     <group ref={ref}>
@@ -163,10 +166,10 @@ function Particles({ from, to }: { from: string; to: string }) {
   );
 }
 
-export function Name({ from, to }: { from: string; to: string }) {
+export function Name({ beads, ink }: { beads: Beads; ink: string }) {
   return (
     <Canvas className="name3d" style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 60 }} dpr={[1, 2]} camera={{ fov: 30, position: [0, 0, 12] }} gl={{ alpha: true, antialias: true }} aria-hidden>
-      <Particles from={from} to={to} />
+      <Particles beads={beads} ink={ink} />
     </Canvas>
   );
 }

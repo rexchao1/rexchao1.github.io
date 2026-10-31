@@ -179,3 +179,14 @@ and link to github or website", and "make the demos / previews way better".
 - New screens: Factory work board and planning (from its public README), Fetch guide (from its README), the live Tooey
   website. Existing shots are only 760px wide, so they soften when zoomed; sharper captures would help.
 - Open: popup copy is a draft for Rex to confirm, especially Tooey's problem line, Animus and CatCart.
+
+## Hero v6 (2026-10-31): bead name, follows the system theme
+
+Rex: the dusk hero "doesn't give impressive"; picked outlined beads, kept "the sky blue and night", and wants "the whole
+page change dark and light with the system".
+- The name is ~2400 opaque beads (`src/intro/Name.tsx`): light mode is white beads with ink rings on a sky blue
+  hero; dark mode is light blue (#8fd0ff) beads with white rings on a night hero. Beads fill in solid ink as the
+  name docks so the header name stays readable. The fine "dust" particles and the dusk sunset are gone.
+- Hero colors are `--hero` and `--hero-fg` in each theme block of `page.css`; `useTheme` in `Page.tsx` reads the
+  computed color scheme, so a `data-theme` override also works.
+- Next: make the sections below the hero more playful (ideas and mocks were shown to Rex; not picked yet).

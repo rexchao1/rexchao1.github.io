@@ -92,9 +92,12 @@ const FACTS: { k: string; v: string; tint: string; art: ReactNode }[] = [
   },
 ];
 
-/** The docked name takes the theme's ink, so it reads on either background. */
-function useInk() {
-  const read = () => getComputedStyle(document.documentElement).getPropertyValue('--name').trim() || '#171a26';
+/** Light or dark, following the system (or a data-theme override), and the theme's ink for the docked name. */
+function useTheme() {
+  const read = () => ({
+    ink: getComputedStyle(document.documentElement).getPropertyValue('--name').trim() || '#171a26',
+    dark: getComputedStyle(document.documentElement).colorScheme === 'dark',
+  });
   const [c, setC] = useState(read);
   useEffect(() => {
     const mq = matchMedia('(prefers-color-scheme: dark)');
@@ -191,7 +194,7 @@ function Contact() {
 }
 
 export function Page() {
-  const ink = useInk();
+  const { ink, dark } = useTheme();
   const active = useActive();
   useReveal();
 
@@ -212,16 +215,17 @@ export function Page() {
         </div>
       </header>
 
-      <Name from="#f6efe4" to={ink} />
+      <Name beads={dark ? { face: '#8fd0ff', ring: '#ffffff' } : { face: '#ffffff', ring: '#16131c' }} ink={ink} />
 
       <section className="hero" id="top" aria-label="Rex Chao">
-        <Dusk />
+        <Dusk light={!dark} />
         <h1 className="sr">Rex Chao</h1>
         <p className="tag">Computer science at UCLA.</p>
         <p className="hint" aria-hidden>
           Scroll
         </p>
       </section>
+
 
       <main>
         <section className="col intro reveal">
