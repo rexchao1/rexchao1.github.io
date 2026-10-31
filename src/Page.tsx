@@ -11,6 +11,7 @@ import { ICON } from './icons';
 import { Work } from './Work';
 import photonLogo from './assets/photon.png';
 import studioLogo from './assets/studioapp.png';
+import bchatLogo from './assets/bchat.png';
 
 const NAV = [
   { id: 'work', label: 'Work' },
@@ -256,6 +257,18 @@ export function Page() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="col club reveal" aria-labelledby="devx">
+          <h2 id="devx">DevX</h2>
+          <p>A UCLA club where students build apps together. Ours is BChat.</p>
+          <a className="logo" href="https://bchatucla.com" target="_blank" rel="noreferrer">
+            <img src={bchatLogo} alt="" />
+            <span>
+              BChat<small>A group chat for every UCLA class you take. In beta on TestFlight.</small>
+            </span>
+            {ICON.arrow}
+          </a>
         </section>
 
         <section id="about" className="col reveal">

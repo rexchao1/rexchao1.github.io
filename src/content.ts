@@ -1,8 +1,9 @@
 import tooey from './assets/tooey.jpg';
 import tooeySite from './assets/tooey-site.jpg';
 import frontdesk from './assets/frontdesk.jpg';
-import fetchPlayer from './assets/fetch.jpg';
-import fetchGuide from './assets/fetch-guide.jpg';
+import marbleCourses from './assets/marble-courses.jpg';
+import marbleNotes from './assets/marble-notes.jpg';
+import panelHome from './assets/panel-home.jpg';
 import bruindesk from './assets/bruindesk.jpg';
 import catcart from './assets/catcart.jpg';
 import animus from './assets/animus.jpg';
@@ -43,7 +44,7 @@ export type Project = {
   tint: string;
 };
 
-/** Tooey first; it is the featured card. */
+/** Tooey first; it is the featured card. Marble and Panel follow as a wider pair. */
 export const WORK: Project[] = [
   {
     id: 'tooey',
@@ -81,6 +82,68 @@ export const WORK: Project[] = [
       },
     ],
     tint: '#ff7a45',
+  },
+  {
+    id: 'marble',
+    title: 'Marble',
+    kind: 'iPad notes app',
+    line: 'A notes app for iPad that already knows your classes, and files every note by course, week and exam.',
+    about: [
+      'Students spread each class across a notes app, Canvas, a planner and Quizlet. Marble keeps it in one place: each course is set up from its syllabus, the school calendar and what the professor posts.',
+      'Notes file, name and tag themselves by course, week and exam, handwritten or typed, so the night before a test you open the exam and every page it covers is already there.',
+    ],
+    stack: ['Swift', 'SwiftUI', 'PencilKit', 'PDFKit', 'SQLite'],
+    links: [],
+    closed: 'The code is private while I build it.',
+    slides: [
+      {
+        img: marbleCourses, ar: 1.366,
+        alt: 'Marble on iPad: three course cards, each with its next lecture and a New note button, beside today\'s schedule',
+        frame: 'none',
+        notes: [
+          { x: 0.34, y: 0.2, text: 'Every course, set up from its syllabus' },
+          { x: 0.41, y: 0.3, text: 'A new note lands in the right course' },
+          { x: 0.1, y: 0.47, text: 'Today\'s classes, next to your notes' },
+        ],
+      },
+      {
+        img: marbleNotes, ar: 1.366,
+        alt: 'A Marble course page for BIO 201 with the next lecture, notes grouped by week, and a switch to group by exam or topic',
+        frame: 'none',
+        notes: [
+          { x: 0.6, y: 0.18, text: 'What\'s next for this class' },
+          { x: 0.3, y: 0.3, text: 'Notes by week, by exam or by topic' },
+          { x: 0.32, y: 0.52, text: 'Each note named and filed for you' },
+        ],
+      },
+    ],
+    tint: '#4fb985',
+  },
+  {
+    id: 'panel',
+    title: 'Panel',
+    kind: 'Agent dashboard',
+    line: 'Your AI agent keeps track of things for you. Panel shows what it found, what changed and what needs you.',
+    about: [
+      'AI agents can keep up with your bills, subscriptions and plans, but what they know is buried in chat. Panel gives it a home: the agent writes to Panel over MCP, and the iPhone app shows each thing it\'s tracking.',
+      'When the agent gets something wrong, you fix it on the phone, and the next session respects the fix. Subscriptions come first. It\'s early: the app runs on sample trackers while the agent connection is finished.',
+    ],
+    stack: ['Swift', 'SwiftUI', 'TypeScript', 'Postgres', 'MCP'],
+    links: [],
+    closed: 'The code is private while I build it.',
+    slides: [
+      {
+        img: panelHome, ar: 0.46,
+        alt: 'Panel on iPhone: colored bubbles for bills, a trip, subscriptions, a remodel, health and a car, some with badges',
+        frame: 'phone',
+        notes: [
+          { x: 0.42, y: 0.54, text: 'One bubble for each thing your agent tracks' },
+          { x: 0.36, y: 0.37, text: 'A badge when something needs you' },
+          { x: 0.5, y: 0.93, text: 'Everything your agent is keeping up with' },
+        ],
+      },
+    ],
+    tint: '#b04ee8',
   },
   {
     id: 'factory',
@@ -142,42 +205,6 @@ export const WORK: Project[] = [
       },
     ],
     tint: '#2fae8a',
-  },
-  {
-    id: 'fetch',
-    title: 'Fetch',
-    kind: 'Mac app',
-    line: 'A Mac app that streams video without the ads. Paste a link and it plays.',
-    about: [
-      'I got tired of streaming in the browser with ads popping up everywhere. Paste a video URL into Fetch and it finds the stream and plays it in a plain player.',
-      'It also works as a middleman for Jellyfin. Sites sign their stream links with tokens that expire in minutes; Fetch keeps refreshing them so Jellyfin always sees one stable URL. Building it taught me how HLS playlists actually work.',
-    ],
-    stack: ['TypeScript', 'Rust', 'HLS'],
-    links: [
-      { label: 'GitHub', href: 'https://github.com/rexchao1/Fetch', icon: 'github' },
-      { label: 'Download for Mac', href: 'https://github.com/rexchao1/Fetch/releases/latest/download/Fetch.dmg', icon: 'download' },
-    ],
-    slides: [
-      {
-        img: fetchPlayer, ar: 1.445,
-        alt: 'Fetch window playing a video above a list of saved channels',
-        frame: 'none',
-        notes: [
-          { x: 0.5, y: 0.4, text: 'Plays the stream, no ads' },
-          { x: 0.3, y: 0.93, text: 'Channels you\'ve saved, one click away' },
-        ],
-      },
-      {
-        img: fetchGuide, ar: 1.556,
-        alt: 'Fetch guide tab showing a live channel',
-        frame: 'none',
-        notes: [
-          { x: 0.5, y: 0.08, text: 'Guide, Capture and Settings' },
-          { x: 0.5, y: 0.5, text: 'Live channels keep playing past token expiry' },
-        ],
-      },
-    ],
-    tint: '#e9493f',
   },
   {
     id: 'bruindesk',

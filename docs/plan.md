@@ -190,3 +190,12 @@ page change dark and light with the system".
 - Hero colors are `--hero` and `--hero-fg` in each theme block of `page.css`; `useTheme` in `Page.tsx` reads the
   computed color scheme, so a `data-theme` override also works.
 - Next: make the sections below the hero more playful (ideas and mocks were shown to Rex; not picked yet).
+
+## Work v6 (2026-10-31): Marble and Panel in, Fetch out, DevX section
+
+Rex: "I don't like fetch", add Marble and Panel "first", and BChat is "part of my devx club. make that a section too. minimal."
+- Order: Tooey (featured), then Marble and Panel as a wider pair, then the rest three across (last two centered).
+- Marble shots come from its own `.flow/screens/M43`; Panel's from `apps/ios/build/screenshots/01-home.png` (sample
+  trackers). Both repos are private, so the popups say the code is private while Rex builds it.
+- DevX is a short column section after Work: one line and a BChat link to bchatucla.com. Open: confirm the club line
+  and whether to name Rex's role on BChat.

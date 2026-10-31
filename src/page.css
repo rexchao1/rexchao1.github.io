@@ -49,7 +49,11 @@ h2{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.01
 
 /* Work: a featured Tooey card, then a grid of cards. Each preview is the real screen in a frame over the
    project's color; hovering plays a short guided demo. Clicking opens the project popup. */
-.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.4vw,28px);margin-top:6px}
+/* Six tracks: Tooey spans all, Marble and Panel are a wider pair, the rest go three across with the last two centered. */
+.cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(18px,2.4vw,28px);margin-top:6px}
+.cards>.card{grid-column:span 2}
+.cards>.card:nth-child(2),.cards>.card:nth-child(3){grid-column:span 3}
+.cards>.card:nth-child(7):nth-last-child(2){grid-column:2 / span 2}
 .card{all:unset;box-sizing:border-box;display:flex;flex-direction:column;min-width:0;border-radius:20px;background:var(--card);border:1px solid var(--line);overflow:hidden;cursor:pointer;
   box-shadow:0 1px 2px rgba(10,14,30,.05);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,border-color .35s}
 .card:hover{transform:translateY(-4px);box-shadow:0 2px 6px rgba(10,14,30,.06),0 24px 48px -18px color-mix(in srgb,var(--tint) 55%,rgba(10,14,30,.4));border-color:color-mix(in srgb,var(--tint) 35%,var(--line))}
@@ -62,14 +66,14 @@ h2{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.01
 .card .more svg{width:16px;height:16px;transition:transform .3s}
 .card:hover .more svg{transform:translateX(4px)}
 .badge{padding:3px 9px;border-radius:999px;background:var(--tint);color:#fff;font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:none}
-.card[data-featured]{grid-column:1 / -1;flex-direction:row}
+.cards>.card[data-featured]{grid-column:1 / -1;flex-direction:row}
 .card[data-featured] .demo{flex:1.55;min-width:0}
 .card[data-featured] .body{flex:1;justify-content:center;padding:28px clamp(22px,3vw,40px);gap:10px}
 .card[data-featured] .name{font-size:clamp(34px,4vw,48px)}
 .card[data-featured] .line{font-size:18px}
 .card[data-featured] .role{font-size:15px;font-weight:600;color:color-mix(in srgb,var(--tint) 70%,var(--fg))}
 .card[data-featured] .more{margin-top:12px}
-@media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.cards>.card,.cards>.card:nth-child(n){grid-column:auto}.cards>.card[data-featured]{grid-column:1 / -1}}
 @media (max-width:700px){.card[data-featured]{flex-direction:column}}
 @media (max-width:560px){.cards{grid-template-columns:1fr}}
 
@@ -183,6 +187,13 @@ main{overflow-x:clip}
 .logo img[data-wide]{width:120px;padding:10px}
 .logo .now{margin-left:auto;flex:none;font-style:normal;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:999px;padding:4px 10px}
 @media (max-width:620px){.logos{grid-template-columns:1fr}}
+
+/* DevX: one line about the club and the app we shipped. */
+.club{display:flex;flex-direction:column;gap:14px}
+.club>p{color:var(--dim)}
+.club a.logo{text-decoration:none;transition:transform .2s,border-color .2s}
+.club a.logo:hover{transform:translateY(-2px);border-color:color-mix(in srgb,#f07a3a 45%,var(--line))}
+.club a.logo svg{margin-left:auto;width:18px;height:18px;flex:none;color:var(--dim)}
 
 /* Outside of code */
 .facts{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
