@@ -6,7 +6,8 @@ import { useEffect, useRef } from 'react';
 
 const GAP = 22;
 
-export function Dusk() {
+/** `light`: faint ink dots for a light sky, warming to orange near the pointer. */
+export function Dusk({ light = false }: { light?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const cv = ref.current!;
@@ -41,7 +42,9 @@ export function Dusk() {
           const r = 0.7 + swell * 0.5 + near * 1.8;
           const a = 0.1 + swell * 0.12 + low * 0.12 + near * 0.6;
           const warm = Math.min(1, low * 0.7 + near);
-          ctx.fillStyle = `rgba(${170 + 85 * warm | 0},${180 + 2 * warm | 0},${255 - 140 * warm | 0},${a})`;
+          ctx.fillStyle = light
+            ? `rgba(${22 + 233 * near | 0},${19 + 103 * near | 0},${28 + 41 * near | 0},${0.06 + swell * 0.08 + near * 0.55})`
+            : `rgba(${170 + 85 * warm | 0},${180 + 2 * warm | 0},${255 - 140 * warm | 0},${a})`;
           ctx.beginPath();
           ctx.arc(x, y, r, 0, Math.PI * 2);
           ctx.fill();
@@ -65,6 +68,6 @@ export function Dusk() {
       removeEventListener('resize', size);
       removeEventListener('pointermove', move);
     };
-  }, []);
+  }, [light]);
   return <canvas ref={ref} className="dusk" aria-hidden />;
 }
